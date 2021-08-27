@@ -28,8 +28,8 @@ tests/proguard-project.txt
 
 # Android Studio and Gradle specific entries
 .gradle
-.idea
-*.iml
+.idea/*
+!.idea/codeStyles/
 build
 /gradle.properties
 .attach_pid*
@@ -49,3 +49,4 @@ fastlane/Fastfile
 **/fastlane/test_output
 /fastlane/vendor/
 /.bundle/
+/fastlane/.bundle/

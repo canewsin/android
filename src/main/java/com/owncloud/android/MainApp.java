@@ -120,7 +120,7 @@ import static com.owncloud.android.ui.activity.ContactsPreferenceActivity.PREFER
  */
 public class MainApp extends MultiDexApplication implements HasAndroidInjector {
 
-    public static final OwnCloudVersion OUTDATED_SERVER_VERSION = OwnCloudVersion.nextcloud_17;
+    public static final OwnCloudVersion OUTDATED_SERVER_VERSION = OwnCloudVersion.nextcloud_18;
     public static final OwnCloudVersion MINIMUM_SUPPORTED_SERVER_VERSION = OwnCloudVersion.nextcloud_16;
 
     private static final String TAG = MainApp.class.getSimpleName();
@@ -384,21 +384,30 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
     @SuppressLint("ApplySharedPref") // commit is done on purpose to write immediately
     private void fixStoragePath() {
         if (!preferences.isStoragePathFixEnabled()) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                StoragePoint[] storagePoints = DataStorageProvider.getInstance().getAvailableStoragePoints();
-                String storagePath = preferences.getStoragePath("");
+            StoragePoint[] storagePoints = DataStorageProvider.getInstance().getAvailableStoragePoints();
+            String storagePath = preferences.getStoragePath("");
 
-                if (TextUtils.isEmpty(storagePath)) {
-                    if (preferences.getLastSeenVersionCode() != 0) {
-                        // We already used the app, but no storage is set - fix that!
-                        preferences.setStoragePath(Environment.getExternalStorageDirectory().getAbsolutePath());
-                        preferences.removeKeysMigrationPreference();
-                    } else {
-                        // find internal storage path that's indexable
-                        boolean set = false;
+            if (TextUtils.isEmpty(storagePath)) {
+                if (preferences.getLastSeenVersionCode() != 0) {
+                    // We already used the app, but no storage is set - fix that!
+                    preferences.setStoragePath(Environment.getExternalStorageDirectory().getAbsolutePath());
+                    preferences.removeKeysMigrationPreference();
+                } else {
+                    // find internal storage path that's indexable
+                    boolean set = false;
+                    for (StoragePoint storagePoint : storagePoints) {
+                        if (storagePoint.getStorageType() == StoragePoint.StorageType.INTERNAL &&
+                            storagePoint.getPrivacyType() == StoragePoint.PrivacyType.PUBLIC) {
+                            preferences.setStoragePath(storagePoint.getPath());
+                            preferences.removeKeysMigrationPreference();
+                            set = true;
+                            break;
+                        }
+                    }
+
+                    if (!set) {
                         for (StoragePoint storagePoint : storagePoints) {
-                            if (storagePoint.getStorageType() == StoragePoint.StorageType.INTERNAL &&
-                                storagePoint.getPrivacyType() == StoragePoint.PrivacyType.PUBLIC) {
+                            if (storagePoint.getPrivacyType() == StoragePoint.PrivacyType.PUBLIC) {
                                 preferences.setStoragePath(storagePoint.getPath());
                                 preferences.removeKeysMigrationPreference();
                                 set = true;
@@ -406,27 +415,10 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
                             }
                         }
 
-                        if (!set) {
-                            for (StoragePoint storagePoint : storagePoints) {
-                                if (storagePoint.getPrivacyType() == StoragePoint.PrivacyType.PUBLIC) {
-                                    preferences.setStoragePath(storagePoint.getPath());
-                                    preferences.removeKeysMigrationPreference();
-                                    set = true;
-                                    break;
-                                }
-                            }
-
-                        }
                     }
-                    preferences.setStoragePathFixEnabled(true);
-                } else {
-                    preferences.removeKeysMigrationPreference();
-                    preferences.setStoragePathFixEnabled(true);
                 }
+                preferences.setStoragePathFixEnabled(true);
             } else {
-                if (TextUtils.isEmpty(storagePath)) {
-                    preferences.setStoragePath(Environment.getExternalStorageDirectory().getAbsolutePath());
-                }
                 preferences.removeKeysMigrationPreference();
                 preferences.setStoragePathFixEnabled(true);
             }
@@ -479,12 +471,10 @@ public class MainApp extends MultiDexApplication implements HasAndroidInjector {
                                                     connectivityService,
                                                     powerManagementService);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            ReceiversHelper.registerPowerSaveReceiver(uploadsStorageManager,
-                                                      accountManager,
-                                                      connectivityService,
-                                                      powerManagementService);
-        }
+        ReceiversHelper.registerPowerSaveReceiver(uploadsStorageManager,
+                                                  accountManager,
+                                                  connectivityService,
+                                                  powerManagementService);
     }
 
     public static void notificationChannels() {

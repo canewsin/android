@@ -10,7 +10,6 @@
     <string name="action_clear_failed_uploads">Notīrīt neizdevušās augšupielādes</string>
     <string name="action_edit">Rediģēt</string>
     <string name="action_empty_notifications">Notīrīt visus paziņojumus</string>
-    <string name="action_empty_trashbin">Izstukšot miskasti</string>
     <string name="action_send_share">Sūtīt/Kopīgot</string>
     <string name="action_switch_grid_view">Režģa izkārtojums</string>
     <string name="action_switch_list_view">Saraksta izkārtojums</string>
@@ -30,6 +29,7 @@
     <string name="activity_chooser_send_file_title">Sūtīt</string>
     <string name="activity_chooser_title">Sūtīt saiti uz…</string>
     <string name="activity_icon">Darbības</string>
+    <string name="add_another_public_share_link">Pievienot citu saiti</string>
     <string name="add_to_cloud">Pievienot %1$s</string>
     <string name="allow_editing">Atļaut rediģēšanu</string>
     <string name="allow_resharing">Atļaut atkārtotu koplietošanu</string>
@@ -40,7 +40,6 @@
     <string name="auth_account_not_the_same">Ievadītais lietotājvārds neatbilst šī konta lietotājam.</string>
     <string name="auth_bad_oc_version_title">Neatpazīta servera versija</string>
     <string name="auth_connection_established">Savienojums ir izveidots</string>
-    <string name="auth_host_address">Servera adrese</string>
     <string name="auth_host_url">Servera adrese https://…</string>
     <string name="auth_incorrect_address_title">Nepareizs servera adreses formāts</string>
     <string name="auth_incorrect_path_title">Serveris nav atrasts</string>
@@ -100,7 +99,6 @@
     <string name="common_save">Saglabāt</string>
     <string name="common_send">Sūtīt</string>
     <string name="common_share">Koplietot</string>
-    <string name="common_unknown">nezināms</string>
     <string name="common_yes">Jā</string>
     <string name="community_beta_headline">Testēt dev versiju</string>
     <string name="community_beta_text">Tas ieskaita visas gaidāmās iespējas un ir pati jaunākā versija. Kļūdas/nepilnības var gadīties, ja un kad tās notiek lūdzu ziņojiet par tām.</string>
@@ -124,7 +122,6 @@
     <string name="confirmation_remove_local">Tikai lokālos</string>
     <string name="conflict_already_existing_file">Jau esošs fails</string>
     <string name="conflict_dialog_error">Kļūda veidojot konfliktu dialogu!</string>
-    <string name="conflict_message_headline">Kuras datnes vēlies paturēt?</string>
     <string name="conflict_new_file">Jauns fails</string>
     <string name="contaclist_restore_selected">Atjaunot izvēlētos kontaktus</string>
     <string name="contactlist_account_chooser_title">Izvēlieties kontu importēšanai</string>
@@ -185,7 +182,6 @@
     <string name="drawer_item_home">Mājas</string>
     <string name="drawer_item_notifications">Paziņojumi</string>
     <string name="drawer_item_on_device">Ierīcē</string>
-    <string name="drawer_item_photos">Bildes</string>
     <string name="drawer_item_recently_added">Nesen pievienotie</string>
     <string name="drawer_item_recently_modified">Nesen mainītie</string>
     <string name="drawer_item_shared">Koplietots</string>
@@ -197,7 +193,6 @@
     <string name="drawer_quota">%1$s no %2$s lietoti</string>
     <string name="drawer_quota_unlimited">%1$s izmantoti</string>
     <string name="drawer_synced_folders">Automātiska augšupielāde</string>
-    <string name="edit_permission_label">rediģēt</string>
     <string name="encrypted">Uzstādīt kā šifrētu</string>
     <string name="end_to_end_encryption_confirm_button">Uzstādīt šifrēšanu</string>
     <string name="end_to_end_encryption_decrypting">Atšifrē…</string>
@@ -214,30 +209,20 @@
     <string name="file_icon">Datne</string>
     <string name="file_list_empty">Augšupielādē kaut ko vai sinhronizē saturu ar savām ierīcēm!</string>
     <string name="file_list_empty_favorite_headline">Nekas vēl nav pievienots favorītiem</string>
-    <string name="file_list_empty_favorites_filter">Nekas netika atrast starp favorītu datnēm.</string>
     <string name="file_list_empty_headline">Šeit nav datņu</string>
     <string name="file_list_empty_headline_search">Nav rezultātu šajā mapē</string>
     <string name="file_list_empty_headline_server_search">Nav rezultātu</string>
-    <string name="file_list_empty_headline_server_search_photos">Nav attēlu</string>
-    <string name="file_list_empty_headline_server_search_videos">Nav video</string>
     <string name="file_list_empty_moving">Šeit nekā nav. Jūs varat pievienot mapi.</string>
     <string name="file_list_empty_recently_added">Neatrada nesen pievienotas datnes</string>
-    <string name="file_list_empty_recently_added_filter">Nav nesen pievienotu datņu.</string>
     <string name="file_list_empty_recently_modified">Neatrada nevienu datni, kas izmainīta pēdējās 7 dienās</string>
-    <string name="file_list_empty_recently_modified_filter">Neviena datne nav bijusi izmainīta pēdējās 7 dienās.</string>
     <string name="file_list_empty_search">Varbūt tas atrodas citā mapē?</string>
     <string name="file_list_empty_shared_headline">Nekas vēl nav koplietots</string>
-    <string name="file_list_empty_text_photos">Augšupielādē attēlus vai ieslēdz automātisko augšupielādi.</string>
-    <string name="file_list_empty_text_photos_filter">Nav attēlu.</string>
-    <string name="file_list_empty_text_videos">Augšupielādē video vai ieslēdz automātisko augšupielādi.</string>
-    <string name="file_list_empty_text_videos_filter">Nav video.</string>
     <string name="file_list_folder">mape</string>
     <string name="file_list_loading">Ielādē …</string>
     <string name="file_list_no_app_for_file_type">Neviena lietotne nevar atvērt šo datnes tipu.</string>
     <string name="file_list_seconds_ago">sekundes atpakaļ</string>
     <string name="file_migration_checking_destination">Pārbauda galamērķi…</string>
     <string name="file_migration_cleaning">Tīra…</string>
-    <string name="file_migration_dialog_title">Atjauninot saglabāšanas vietu</string>
     <string name="file_migration_directory_already_exists">Datu mape jau pastāv. Izvēlies vienu no sekojošām opcijām:</string>
     <string name="file_migration_failed_dir_already_exists">Nextcloud mape jau pastāv</string>
     <string name="file_migration_failed_not_enough_space">Nepieciešams vairāk vietas</string>
@@ -251,7 +236,6 @@
     <string name="file_migration_preparing">Sagatavo migrāciju…</string>
     <string name="file_migration_restoring_accounts_configuration">Atjauno kontu konfigurāciju…</string>
     <string name="file_migration_saving_accounts_configuration">Saglabā konta konfigurāciju…</string>
-    <string name="file_migration_source_not_readable">Vai tu tiešām gribi pārmainīt saglabāšanas ceļu uz %1$s?\n\nPiezīme: Visi dati būs jānolādē pa jaunu.</string>
     <string name="file_migration_source_not_readable_title">Avota mape nav lasāma</string>
     <string name="file_migration_updating_index">Atjaunina indkesu…</string>
     <string name="file_migration_use_data_folder">Izmantot</string>
@@ -297,16 +281,13 @@
     <string name="local_file_not_found_message">Datne lokālajā datņu sistēmā netika atrasta</string>
     <string name="local_folder_list_empty">Tālāku mapju vairs nav.</string>
     <string name="log_send_mail_subject">%1$s Android lietotnes žurnāli</string>
-    <string name="log_send_no_mail_app">Nav atrasta neviena lietotne notikumu žurnāla sūtīšanai. Lūdzu instalējiet e-pasta klientu.</string>
     <string name="login">Pieteikties</string>
     <string name="logs_menu_refresh">Atsvaidzināt</string>
     <string name="logs_status_loading">Notiek ielāde...</string>
     <string name="logs_title">Žurnāli</string>
-    <string name="maintenance_mode">Serveris ir uzturēšanas režīmā</string>
     <string name="manage_space_clear_data">Notīrīt datus</string>
     <string name="manage_space_description">Iestatījumi, datubāze un servera sertifikāti no %1$s datiem tiks dzēsti pilnībā. \n\nLejupielādētās datnes paliks neskartas.\n\nŠis proces var aizņemt mazliet laika.</string>
     <string name="manage_space_title">Pārvaldīt vietu</string>
-    <string name="media_err_invalid_progressive_playback">Nevar straumēt multivides datni</string>
     <string name="media_err_io">Nevarēja nolasīt medija datni</string>
     <string name="media_err_malformed">Multivides datnei nav pareizs kodējums</string>
     <string name="media_err_timeout">Mēģinājums atskaņot datni noilga</string>
@@ -332,7 +313,6 @@
     <string name="new_media_folder_photos">bilde</string>
     <string name="new_version_was_created">Jauna versija izveidota</string>
     <string name="note_confirm">Sūtīt</string>
-    <string name="notifications_loading_activity">Ielādē paziņojumus…</string>
     <string name="notifications_no_results_headline">Nav paziņojumu</string>
     <string name="offline_mode">Nav interneta savienojuma</string>
     <string name="oneHour">1 stunda</string>
@@ -381,7 +361,6 @@
     <string name="prefs_manage_accounts">Pārvaldīt kontus</string>
     <string name="prefs_recommend">Ieteikt draugam</string>
     <string name="prefs_show_hidden_files">Rādīt slēptās datnes</string>
-    <string name="prefs_storage_path">Krātuves vieta</string>
     <string name="prefs_synced_folders_local_path_title">Vietējā mape</string>
     <string name="prefs_synced_folders_remote_path_title">Attālinātā mape</string>
     <string name="prefs_value_theme_dark">Tumšs</string>
@@ -410,11 +389,10 @@
     <string name="set_picture_as">Izmantot attēlu kā</string>
     <string name="share">Dalīties</string>
     <string name="share_dialog_title">Koplietošana</string>
-    <string name="share_email_clarification">%1$s (e-pasts)</string>
     <string name="share_expiration_date_label">Beidzas %1$s</string>
     <string name="share_file">Koplietots %1$s</string>
     <string name="share_group_clarification">%1$s (grupa)</string>
-    <string name="share_known_remote_clarification">%1$s ( uz %2$s )</string>
+    <string name="share_internal_link_to_file_text">Iekšējās kopīgošanas saite darbojas tikai lietotājiem, kuriem ir piekļuve šai datnei</string>
     <string name="share_link">Koplietot saiti</string>
     <string name="share_link_empty_password">Jums ir jāievada paroli</string>
     <string name="share_link_forbidden_permissions">lai koplietotu šo datni</string>
@@ -422,13 +400,9 @@
     <string name="share_no_expiration_date_label">Uzstādīt beigu termiņu</string>
     <string name="share_no_password_title">Uzstādīt paroli</string>
     <string name="share_password_title">Aizsargāts ar paroli</string>
-    <string name="share_privilege_can_edit_change">var mainīt</string>
-    <string name="share_privilege_can_edit_create">var izveidot</string>
-    <string name="share_privilege_can_edit_delete">var dzēst</string>
-    <string name="share_privilege_can_share">var koplietot</string>
     <string name="share_privilege_unshare">Pārtraukt dalīšanos</string>
     <string name="share_remote_clarification">%1$s (attālināti)</string>
-    <string name="share_via_link_hide_file_listing_permission_label">Paslēpt datņu sarakstu</string>
+    <string name="share_via_link_hide_download">Slēpt lejupielādi</string>
     <string name="share_via_link_menu_password_label">Aizsargāt ar paroli (%1$s)</string>
     <string name="share_via_link_section_title">Koplietot saiti</string>
     <string name="share_via_link_send_link_label">Sūtīt saiti</string>
@@ -484,7 +458,6 @@
     <string name="sync_file_nothing_to_do_msg">Datnes saturs jau ir sinhronizēts</string>
     <string name="sync_foreign_files_forgotten_ticker">Dažas lokālās datnes tika aizmirstas</string>
     <string name="sync_string_files">Datnes</string>
-    <string name="synced_folders_loading_folders">Ielādē mapes…</string>
     <string name="synced_folders_preferences">Iestatījumi automātiskai augšupielādei</string>
     <string name="synced_folders_preferences_folder_path">Priekš %1$s</string>
     <string name="synced_folders_type">Tips</string>
@@ -494,7 +467,6 @@
     <string name="today">Šodien</string>
     <string name="trashbin_activity_title">Dzēstās datnes</string>
     <string name="trashbin_empty_headline">Nav dzēstu datņu</string>
-    <string name="trashbin_loading_failed">Kļūda ielādējot miskasti!</string>
     <string name="unset_encrypted">Atstatīt šifrēšanu</string>
     <string name="unset_favorite">Noņemt no favorītiem</string>
     <string name="unshare">Pārtraukt dalīšanos</string>
@@ -519,7 +491,6 @@
     <string name="uploader_error_message_read_permission_not_granted">%1$s nav atļauts lasīt saņemto datni</string>
     <string name="uploader_error_message_source_file_not_copied">Nevarēja pārkopēt datni uz pagaidu mapi. Lūdzu mēģini sūtīt vēlreiz.</string>
     <string name="uploader_error_message_source_file_not_found">Augšupielādējamā datne netika atrasta. Lūdzu pārbaudi vai datne eksistē.</string>
-    <string name="uploader_error_title_file_cannot_be_uploaded">Šo datni nevar augšupielādēt</string>
     <string name="uploader_error_title_no_file_to_upload">Nav datņu augšupielādei</string>
     <string name="uploader_info_dirname">Mapes nosaukums</string>
     <string name="uploader_top_message">Izvēlies augšupielādes mapi</string>
@@ -560,7 +531,6 @@
     <string name="uploads_view_upload_status_waiting_for_charging">Gaida uzlādi</string>
     <string name="user_icon">Lietotājs</string>
     <string name="user_info_address">Adrese</string>
-    <string name="user_info_email">E-pasts</string>
     <string name="user_info_phone">Tālruņa numurs</string>
     <string name="user_info_twitter">Twitter</string>
     <string name="user_info_website">Mājaslapa</string>

@@ -104,7 +104,6 @@ import java.util.regex.Pattern;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
 import androidx.core.content.FileProvider;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -245,10 +244,15 @@ public class FileOperationsHelper {
 
     private void syncFile(OCFile file, User user, FileDataStorageManager storageManager) {
         fileActivity.runOnUiThread(() -> fileActivity.showLoadingDialog(fileActivity.getResources()
-                .getString(R.string.sync_in_progress)));
+                                                                            .getString(R.string.sync_in_progress)));
 
-        SynchronizeFileOperation sfo = new SynchronizeFileOperation(file, null, user, true, fileActivity);
-        RemoteOperationResult result = sfo.execute(storageManager, fileActivity);
+        SynchronizeFileOperation sfo = new SynchronizeFileOperation(file,
+                                                                    null,
+                                                                    user,
+                                                                    true,
+                                                                    fileActivity,
+                                                                    storageManager);
+        RemoteOperationResult result = sfo.execute(fileActivity);
 
         if (result.getCode() == RemoteOperationResult.ResultCode.SYNC_CONFLICT) {
             // ISSUE 5: if the user is not running the app (this is a service!),
@@ -288,14 +292,12 @@ public class FileOperationsHelper {
 
                 if (optionalUser.isPresent() && FileMenuFilter.isEditorAvailable(fileActivity.getContentResolver(),
                                                                                  optionalUser.get(),
-                                                                                 file.getMimeType()) &&
-                    android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                                                                                 file.getMimeType())) {
                     openFileWithTextEditor(file, fileActivity);
                 } else {
                     Account account = fileActivity.getAccount();
                     OCCapability capability = fileActivity.getStorageManager().getCapability(account.name);
                     if (capability.getRichDocumentsMimeTypeList().contains(file.getMimeType()) &&
-                        android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
                         capability.getRichDocumentsDirectEditing().isTrue()) {
                         openFileAsRichDocument(file, fileActivity);
                         return;
@@ -312,13 +314,17 @@ public class FileOperationsHelper {
                 public void run() {
                     User user = currentAccount.getUser();
                     FileDataStorageManager storageManager =
-                            new FileDataStorageManager(user.toPlatformAccount(), fileActivity.getContentResolver());
+                        new FileDataStorageManager(user.toPlatformAccount(), fileActivity.getContentResolver());
                     // a fresh object is needed; many things could have occurred to the file
                     // since it was registered to observe again, assuming that local files
                     // are linked to a remote file AT MOST, SOMETHING TO BE DONE;
-                    SynchronizeFileOperation sfo =
-                            new SynchronizeFileOperation(file, null, user, true, fileActivity);
-                    RemoteOperationResult result = sfo.execute(storageManager, fileActivity);
+                    SynchronizeFileOperation sfo = new SynchronizeFileOperation(file,
+                                                                                null,
+                                                                                user,
+                                                                                true,
+                                                                                fileActivity,
+                                                                                storageManager);
+                    RemoteOperationResult result = sfo.execute(fileActivity);
                     fileActivity.dismissLoadingDialog();
                     if (result.getCode() == RemoteOperationResult.ResultCode.SYNC_CONFLICT) {
                         // ISSUE 5: if the user is not running the app (this is a service!),
@@ -360,7 +366,6 @@ public class FileOperationsHelper {
         }
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void openFileAsRichDocument(OCFile file, Context context) {
         Intent collaboraWebViewIntent = new Intent(context, RichDocumentsEditorWebView.class);
         collaboraWebViewIntent.putExtra(ExternalSiteWebView.EXTRA_TITLE, "Collabora");
@@ -369,7 +374,6 @@ public class FileOperationsHelper {
         context.startActivity(collaboraWebViewIntent);
     }
 
-    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public void openFileWithTextEditor(OCFile file, Context context) {
         Intent textEditorIntent = new Intent(context, TextEditorWebView.class);
         textEditorIntent.putExtra(ExternalSiteWebView.EXTRA_TITLE, "Text");
@@ -971,8 +975,6 @@ public class FileOperationsHelper {
     public void uploadFromCamera(Activity activity, int requestCode) {
         Intent pictureIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 
-        deleteOldFiles(activity);
-
         File photoFile = createImageFile(activity);
 
         Uri photoUri = FileProvider.getUriForFile(activity.getApplicationContext(),
@@ -987,18 +989,6 @@ public class FileOperationsHelper {
             }
         } else {
             DisplayUtils.showSnackMessage(activity, "No Camera found");
-        }
-    }
-
-    private void deleteOldFiles(Activity activity) {
-        File storageDir = activity.getExternalFilesDir(Environment.DIRECTORY_PICTURES);
-
-        if (storageDir != null) {
-            for (File file : storageDir.listFiles()) {
-                if (!file.delete()) {
-                    Log_OC.d(this, "Failed to delete: " + file.getAbsolutePath());
-                }
-            }
         }
     }
 

@@ -7,7 +7,7 @@
     <issue id="InvalidPackage">
         <ignore path="**/freemarker-2.*.*.jar" />
         <ignore path="**/nnio-0.2.jar"/>
-        <ignore path="**/bcpkix-jdk15on-1.65.jar" />
+        <ignore path="**/bcpkix-jdk15on-1.69.jar" />
     </issue>
 
     <issue id="UnusedResources">
@@ -19,6 +19,7 @@
 
     <issue id="MissingQuantity">
         <ignore path="**/values-ka-rGE/strings.xml"/>
+        <ignore path="**/values-ar/strings.xml" />
     </issue>
 
     <issue id="UnusedQuantity">
@@ -60,8 +61,9 @@
         <ignore path="**/fragment-1.2.5/**/lint.jar" />
         <ignore path="**/work-runtime-2.**/**/lint.jar" />
         <ignore path="**/jetified-butterknife-runtime-10.**/**/lint.jar" />
-        <ignore path="**/jetified-dagger-lint-aar-2.29.**/**/lint.jar" />
+        <ignore path="**/jetified-dagger-lint-aar-2.**.**/**/lint.jar" />
         <ignore path="**/jetified-annotation-experimental-1.**/**/lint.jar" />
         <ignore path="**/jetified-firebase-installations**/**/lint.jar" />
+        <ignore path="**/appcompat-1.**/**/lint.jar" />
     </issue>
 </lint>

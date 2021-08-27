@@ -22,15 +22,14 @@
 
 package com.owncloud.android.ui.preview;
 
-import android.accounts.Account;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import com.nextcloud.client.account.User;
@@ -39,7 +38,6 @@ import com.owncloud.android.R;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.files.FileMenuFilter;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.dialog.ConfirmationDialogFragment;
 import com.owncloud.android.ui.dialog.RemoveFilesDialogFragment;
 import com.owncloud.android.utils.DisplayUtils;
@@ -65,13 +63,27 @@ import androidx.core.view.MenuItemCompat;
 
 public class PreviewTextFileFragment extends PreviewTextFragment {
     private static final String EXTRA_FILE = "FILE";
-    private static final String EXTRA_ACCOUNT = "ACCOUNT";
+    private static final String EXTRA_USER = "USER";
+    private static final String EXTRA_OPEN_SEARCH = "SEARCH";
+    private static final String EXTRA_SEARCH_QUERY = "SEARCH_QUERY";
+
     private static final String TAG = PreviewTextFileFragment.class.getSimpleName();
 
     private TextLoadAsyncTask textLoadAsyncTask;
-    private Account account;
+    private User user;
 
     @Inject UserAccountManager accountManager;
+
+    public static PreviewTextFileFragment create(User user, OCFile file, boolean openSearch, String searchQuery) {
+        Bundle args = new Bundle();
+        args.putParcelable(EXTRA_FILE, file);
+        args.putParcelable(EXTRA_USER, user);
+        args.putBoolean(EXTRA_OPEN_SEARCH, openSearch);
+        args.putString(EXTRA_SEARCH_QUERY, searchQuery);
+        PreviewTextFileFragment fragment = new PreviewTextFileFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     /**
      * Creates an empty fragment for previews.
@@ -79,11 +91,11 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
      * MUST BE KEPT: the system uses it when tries to re-instantiate a fragment automatically (for instance, when the
      * device is turned a aside).
      * <p>
-     * DO NOT CALL IT: an {@link OCFile} and {@link Account} must be provided for a successful construction
+     * DO NOT CALL IT: an {@link OCFile} and {@link User} must be provided for a successful construction
      */
     public PreviewTextFileFragment() {
         super();
-        account = null;
+        user = null;
     }
 
     /**
@@ -99,31 +111,31 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
         Bundle args = getArguments();
 
         if (file == null) {
-            file = args.getParcelable(FileDisplayActivity.EXTRA_FILE);
+            file = args.getParcelable(EXTRA_FILE);
         }
 
-        if (account == null) {
-            account = args.getParcelable(FileDisplayActivity.EXTRA_ACCOUNT);
+        if (user == null) {
+            user = args.getParcelable(EXTRA_USER);
         }
 
-        if (args.containsKey(FileDisplayActivity.EXTRA_SEARCH_QUERY)) {
-            mSearchQuery = args.getString(FileDisplayActivity.EXTRA_SEARCH_QUERY);
+        if (args.containsKey(EXTRA_SEARCH_QUERY)) {
+            searchQuery = args.getString(EXTRA_SEARCH_QUERY);
         }
-        mSearchOpen = args.getBoolean(FileDisplayActivity.EXTRA_SEARCH, false);
+        searchOpen = args.getBoolean(EXTRA_OPEN_SEARCH, false);
 
         if (savedInstanceState == null) {
             if (file == null) {
                 throw new IllegalStateException("Instanced with a NULL OCFile");
             }
-            if (account == null) {
+            if (user == null) {
                 throw new IllegalStateException("Instanced with a NULL ownCloud Account");
             }
         } else {
             file = savedInstanceState.getParcelable(EXTRA_FILE);
-            account = savedInstanceState.getParcelable(EXTRA_ACCOUNT);
+            user = savedInstanceState.getParcelable(EXTRA_USER);
         }
 
-        mHandler = new Handler();
+        handler = new Handler();
         setFile(file);
     }
 
@@ -133,14 +145,14 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         outState.putParcelable(PreviewTextFileFragment.EXTRA_FILE, getFile());
-        outState.putParcelable(PreviewTextFileFragment.EXTRA_ACCOUNT, account);
-
+        outState.putParcelable(PreviewTextFileFragment.EXTRA_USER, user);
         super.onSaveInstanceState(outState);
     }
 
     @Override
     void loadAndShowTextPreview() {
-        textLoadAsyncTask = new TextLoadAsyncTask(new WeakReference<>(mTextPreview));
+        textLoadAsyncTask = new TextLoadAsyncTask(new WeakReference<>(binding.textPreview),
+                                                  new WeakReference<>(binding.emptyListProgress));
         textLoadAsyncTask.execute(getFile().getStoragePath());
     }
 
@@ -149,10 +161,12 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
      */
     private class TextLoadAsyncTask extends AsyncTask<Object, Void, StringWriter> {
         private static final int PARAMS_LENGTH = 1;
-        private final WeakReference<TextView> mTextViewReference;
+        private final WeakReference<TextView> textViewReference;
+        private final WeakReference<FrameLayout> progressViewReference;
 
-        private TextLoadAsyncTask(WeakReference<TextView> textView) {
-            mTextViewReference = textView;
+        private TextLoadAsyncTask(WeakReference<TextView> textView, WeakReference<FrameLayout> progressView) {
+            textViewReference = textView;
+            progressViewReference = progressView;
         }
 
         @Override
@@ -210,25 +224,26 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
 
         @Override
         protected void onPostExecute(final StringWriter stringWriter) {
-            final TextView textView = mTextViewReference.get();
+            final TextView textView = textViewReference.get();
 
             if (textView != null) {
-                mOriginalText = stringWriter.toString();
-                setText(textView, mOriginalText, getFile(), requireActivity());
+                originalText = stringWriter.toString();
+                setText(textView, originalText, getFile(), requireActivity());
 
-                if (mSearchView != null) {
-                    mSearchView.setOnQueryTextListener(PreviewTextFileFragment.this);
+                if (searchView != null) {
+                    searchView.setOnQueryTextListener(PreviewTextFileFragment.this);
 
-                    if (mSearchOpen) {
-                        mSearchView.setQuery(mSearchQuery, true);
+                    if (searchOpen) {
+                        searchView.setQuery(searchQuery, true);
                     }
                 }
 
                 textView.setVisibility(View.VISIBLE);
             }
 
-            if (mMultiListContainer != null) {
-                mMultiListContainer.setVisibility(View.GONE);
+            final FrameLayout progress = progressViewReference.get();
+            if (progress != null) {
+                progress.setVisibility(View.GONE);
             }
         }
     }
@@ -243,13 +258,13 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
         menuItem.setVisible(true);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        mSearchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
 
-        if (mSearchOpen) {
-            mSearchView.setIconified(false);
-            mSearchView.setQuery(mSearchQuery, false);
-            mSearchView.clearFocus();
+        if (searchOpen) {
+            searchView.setIconified(false);
+            searchView.setQuery(searchQuery, false);
+            searchView.clearFocus();
         }
     }
 
@@ -267,7 +282,6 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
                 containerActivity,
                 getActivity(),
                 false,
-                deviceInfo,
                 user
             );
             mf.filter(menu, true);
@@ -284,10 +298,6 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
             menu.findItem(R.id.action_unset_favorite)
         );
 
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            FileMenuFilter.hideMenuItem(menu.findItem(R.id.action_edit));
-        }
-
         if (getFile().isSharedWithMe() && !getFile().canReshare()) {
             FileMenuFilter.hideMenuItem(menu.findItem(R.id.action_send_share_file));
         }
@@ -298,43 +308,34 @@ public class PreviewTextFileFragment extends PreviewTextFragment {
      */
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_send_share_file: {
-                if (getFile().isSharedWithMe() && !getFile().canReshare()) {
-                    DisplayUtils.showSnackMessage(getView(), R.string.resharing_is_not_allowed);
-                } else {
-                    containerActivity.getFileOperationsHelper().sendShareFile(getFile());
-                }
-                return true;
-            }
-            case R.id.action_open_file_with: {
-                openFile();
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_see_details: {
-                seeDetails();
-                return true;
-            }
-            case R.id.action_sync_file: {
-                containerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
+        int itemId = item.getItemId();
 
-            case R.id.action_edit:
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                    containerActivity.getFileOperationsHelper().openFileWithTextEditor(getFile(), getContext());
-                    return true;
-                }
-                return false;
-
-            default:
-                return super.onOptionsItemSelected(item);
+        if (itemId == R.id.action_send_share_file) {
+            if (getFile().isSharedWithMe() && !getFile().canReshare()) {
+                DisplayUtils.showSnackMessage(getView(), R.string.resharing_is_not_allowed);
+            } else {
+                containerActivity.getFileOperationsHelper().sendShareFile(getFile());
+            }
+            return true;
+        } else if (itemId == R.id.action_open_file_with) {
+            openFile();
+            return true;
+        } else if (itemId == R.id.action_remove_file) {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), ConfirmationDialogFragment.FTAG_CONFIRMATION);
+            return true;
+        } else if (itemId == R.id.action_see_details) {
+            seeDetails();
+            return true;
+        } else if (itemId == R.id.action_sync_file) {
+            containerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        } else if (itemId == R.id.action_edit) {
+            containerActivity.getFileOperationsHelper().openFileWithTextEditor(getFile(), getContext());
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     /**

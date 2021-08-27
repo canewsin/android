@@ -42,9 +42,12 @@ import android.os.AsyncTask;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 import android.view.Display;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 
+import com.nextcloud.client.account.User;
 import com.nextcloud.client.network.ConnectivityService;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
@@ -253,21 +256,27 @@ public final class ThumbnailsCacheManager {
         private FileDataStorageManager storageManager;
         private Account account;
         private WeakReference<ImageView> imageViewReference;
+        private WeakReference<FrameLayout> frameLayoutReference;
         private OCFile file;
         private ConnectivityService connectivityService;
+        private int backgroundColor;
 
 
         public ResizedImageGenerationTask(FileFragment fileFragment,
                                           ImageView imageView,
+                                          FrameLayout emptyListProgress,
                                           FileDataStorageManager storageManager,
                                           ConnectivityService connectivityService,
-                                          Account account)
+                                          Account account,
+                                          int backgroundColor)
                 throws IllegalArgumentException {
             this.fileFragment = fileFragment;
             imageViewReference = new WeakReference<>(imageView);
+            frameLayoutReference = new WeakReference<>(emptyListProgress);
             this.storageManager = storageManager;
             this.connectivityService = connectivityService;
             this.account = account;
+            this.backgroundColor = backgroundColor;
         }
 
         @Override
@@ -280,7 +289,7 @@ public final class ThumbnailsCacheManager {
                 if (account != null) {
                     OwnCloudAccount ocAccount = new OwnCloudAccount(account, MainApp.getAppContext());
                     mClient = OwnCloudClientManagerFactory.getDefaultSingleton().getClientFor(ocAccount,
-                            MainApp.getAppContext());
+                                                                                              MainApp.getAppContext());
                 }
 
                 thumbnail = doResizedImageInBackground();
@@ -375,6 +384,7 @@ public final class ThumbnailsCacheManager {
         protected void onPostExecute(Bitmap bitmap) {
             if (imageViewReference != null) {
                 final ImageView imageView = imageViewReference.get();
+                final FrameLayout frameLayout = frameLayoutReference.get();
 
                 if (bitmap != null) {
                     final ResizedImageGenerationTask bitmapWorkerTask = getResizedImageGenerationWorkerTask(imageView);
@@ -383,7 +393,13 @@ public final class ThumbnailsCacheManager {
                         String tagId = String.valueOf(file.getFileId());
 
                         if (String.valueOf(imageView.getTag()).equals(tagId)) {
+                            imageView.setVisibility(View.VISIBLE);
                             imageView.setImageBitmap(bitmap);
+                            imageView.setBackgroundColor(backgroundColor);
+
+                            if (frameLayout != null) {
+                                frameLayout.setVisibility(View.GONE);
+                            }
                         }
                     }
                 } else {
@@ -854,7 +870,7 @@ public final class ThumbnailsCacheManager {
         private final Object mCallContext;
         private final Resources mResources;
         private final float mAvatarRadius;
-        private Account mAccount;
+        private User user;
         private String mUserId;
         private String mServerName;
         private Context mContext;
@@ -862,7 +878,7 @@ public final class ThumbnailsCacheManager {
 
         public AvatarGenerationTask(AvatarGenerationListener avatarGenerationListener,
                                     Object callContext,
-                                    Account account,
+                                    User user,
                                     Resources resources,
                                     float avatarRadius,
                                     String userId,
@@ -870,7 +886,7 @@ public final class ThumbnailsCacheManager {
                                     Context context) {
             mAvatarGenerationListener = new WeakReference<>(avatarGenerationListener);
             mCallContext = callContext;
-            mAccount = account;
+            this.user = user;
             mResources = resources;
             mAvatarRadius = avatarRadius;
             mUserId = userId;
@@ -936,8 +952,8 @@ public final class ThumbnailsCacheManager {
             if (System.currentTimeMillis() - timestamp >= 60 * 60 * 1000 || avatar == null) {
                 GetMethod get = null;
                 try {
-                    if (mAccount != null) {
-                        OwnCloudAccount ocAccount = new OwnCloudAccount(mAccount, mContext);
+                    if (user != null) {
+                        OwnCloudAccount ocAccount = user.toOwnCloudAccount();
                         mClient = OwnCloudClientManagerFactory.getDefaultSingleton().getClientFor(ocAccount, mContext);
                     }
 
@@ -979,7 +995,7 @@ public final class ThumbnailsCacheManager {
                                                                             ThumbnailsCacheManager.AVATAR_TIMESTAMP,
                                                                             System.currentTimeMillis());
                             } else {
-                                return TextDrawable.createAvatar(mAccount, mAvatarRadius);
+                                return TextDrawable.createAvatar(user, mAvatarRadius);
                             }
                             break;
 
@@ -997,7 +1013,7 @@ public final class ThumbnailsCacheManager {
                     }
                 } catch (Exception e) {
                     try {
-                        return TextDrawable.createAvatar(mAccount, mAvatarRadius);
+                        return TextDrawable.createAvatar(user, mAvatarRadius);
                     } catch (Exception e1) {
                         Log_OC.e(TAG, "Error generating fallback avatar");
                     }
@@ -1010,7 +1026,7 @@ public final class ThumbnailsCacheManager {
 
             if (avatar == null) {
                 try {
-                    return TextDrawable.createAvatar(mAccount, mAvatarRadius);
+                    return TextDrawable.createAvatar(user, mAvatarRadius);
                 } catch (Exception e1) {
                     return ResourcesCompat.getDrawable(mResources, R.drawable.ic_user, null);
                 }
@@ -1190,7 +1206,7 @@ public final class ThumbnailsCacheManager {
         }
     }
 
-    public static void generateThumbnailFromOCFile(OCFile file) {
+    public static void generateThumbnailFromOCFile(OCFile file, Account account, Context context) {
         int pxW;
         int pxH;
         pxW = pxH = getThumbnailDimension();
@@ -1201,7 +1217,13 @@ public final class ThumbnailsCacheManager {
         try {
             Bitmap thumbnail = null;
 
-            String uri = mClient.getBaseUri() + "/index.php/apps/files/api/v1/thumbnail/" +
+            OwnCloudClient client = mClient;
+            if (client == null) {
+                OwnCloudAccount ocAccount = new OwnCloudAccount(account, context);
+                client = OwnCloudClientManagerFactory.getDefaultSingleton().getClientFor(ocAccount, context);
+            }
+
+            String uri = client.getBaseUri() + "/index.php/apps/files/api/v1/thumbnail/" +
                 pxW + "/" + pxH + Uri.encode(file.getRemotePath(), "/");
 
             Log_OC.d(TAG, "generate thumbnail: " + file.getFileName() + " URI: " + uri);
@@ -1211,13 +1233,13 @@ public final class ThumbnailsCacheManager {
             getMethod.setRequestHeader(RemoteOperation.OCS_API_HEADER,
                                        RemoteOperation.OCS_API_HEADER_VALUE);
 
-            int status = mClient.executeMethod(getMethod);
+            int status = client.executeMethod(getMethod);
             if (status == HttpStatus.SC_OK) {
                 InputStream inputStream = getMethod.getResponseBodyAsStream();
                 Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
                 thumbnail = ThumbnailUtils.extractThumbnail(bitmap, pxW, pxH);
             } else {
-                mClient.exhaustResponse(getMethod.getResponseBodyAsStream());
+                client.exhaustResponse(getMethod.getResponseBodyAsStream());
             }
 
             // Add thumbnail to cache

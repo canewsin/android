@@ -10,7 +10,6 @@
     <string name="action_clear_failed_uploads">Hreinsa lista yfir innsendingar sem mistókust</string>
     <string name="action_edit">Breyta</string>
     <string name="action_empty_notifications">Hreinsa allar tilkynningar</string>
-    <string name="action_empty_trashbin">Tæma ruslafötu</string>
     <string name="action_send_share">Senda/Deila</string>
     <string name="action_switch_grid_view">Reitasýn</string>
     <string name="action_switch_list_view">Listasýn</string>
@@ -45,7 +44,6 @@
     <string name="auth_bad_oc_version_title">Óþekkjanleg útgáfa af þjóni</string>
     <string name="auth_connection_established">Tengingu hefur verið komið á</string>
     <string name="auth_fail_get_user_name">Vefþjónninn þinn er ekki að svara með réttu notandaauðkenni, hafðu samband við kerfisstjóra..</string>
-    <string name="auth_host_address">Vistfang miðlara</string>
     <string name="auth_host_url">Vistfang þjóns https://…</string>
     <string name="auth_incorrect_address_title">Rangt snið á vistfangi þjóns</string>
     <string name="auth_incorrect_path_title">Þjónn finnst ekki!!!</string>
@@ -111,7 +109,6 @@
     <string name="common_share">Deila</string>
     <string name="common_switch_account">Skipta um notandaaðgang</string>
     <string name="common_switch_to_account">Skipta í notandaaðgang</string>
-    <string name="common_unknown">óþekkt</string>
     <string name="common_yes">Já</string>
     <string name="community_beta_headline">Prófaðu þróunarútgáfuna</string>
     <string name="community_beta_text">Þetta inniheldur alla væntanlega eiginleika og er alveg á jaðrinum hvað varðar stöðugleika. Villur geta komið upp, og ef slíkt gerist, endilega tilkynntu um þær.</string>
@@ -141,7 +138,6 @@
     <string name="conflict_already_existing_file">Fyrirliggjandi skrá</string>
     <string name="conflict_dialog_error">Villa við að búa til árekstraglugga!</string>
     <string name="conflict_message_description">Ef þú velur báðar útgáfur, þá mun verða bætt tölustaf aftan við heiti afrituðu skrárinnar.</string>
-    <string name="conflict_message_headline">Hvaða skrám vilt þú vilt halda eftir?</string>
     <string name="conflict_new_file">Ný skrá</string>
     <string name="contaclist_restore_selected">Endurheimta valda tengiliði</string>
     <string name="contactlist_account_chooser_title">Veldu aðgang til að flytja inn</string>
@@ -208,7 +204,6 @@
     <string name="drawer_item_home">Heim</string>
     <string name="drawer_item_notifications">Tilkynningar</string>
     <string name="drawer_item_on_device">Á tækinu</string>
-    <string name="drawer_item_photos">Ljósmyndir</string>
     <string name="drawer_item_recently_added">Nýlega bætt við</string>
     <string name="drawer_item_recently_modified">Nýleg tillaga</string>
     <string name="drawer_item_shared">Sameiginlegt</string>
@@ -221,8 +216,6 @@
     <string name="drawer_quota_unlimited">%s notað</string>
     <string name="drawer_synced_folders">Sjálfvirk innsending</string>
     <string name="edit_label">Breyta nafni</string>
-    <string name="edit_permission_label">breyta</string>
-    <string name="edit_rich_workspace">breytir upplýsingum um möppu</string>
     <string name="encrypted">Setja sem dulritað</string>
     <string name="end_to_end_encryption_confirm_button">Setja upp dulritun</string>
     <string name="end_to_end_encryption_decrypting">Afkóðun</string>
@@ -232,7 +225,6 @@
     <string name="end_to_end_encryption_generating_keys">Útbý nýja dulritunarlykla…</string>
     <string name="end_to_end_encryption_keywords_description">Öll 12 orðin saman gera mjög sterkt lykilorð, þannig að einungis þú getur skoðað og notað dulrituðu skrárnar þínar. Endilega skrifaðu þau niður og geymdu á öruggum stað.</string>
     <string name="end_to_end_encryption_not_enabled">Enda-í-enda dulritun óvirk á þjóni.</string>
-    <string name="end_to_end_encryption_not_supported">Dulritun virkar aðeins á KitKat(4.4) og nýrra.</string>
     <string name="end_to_end_encryption_passphrase_title">Skrifaðu niður 12 orða dulritunarlykilorðið þitt</string>
     <string name="end_to_end_encryption_password">Lykilorð</string>
     <string name="end_to_end_encryption_retrieving_keys">Sæki dulritunarlykla…</string>
@@ -263,9 +255,6 @@
     <string name="etm_background_jobs_schedule_test_job">Áætla prufuverk</string>
     <string name="etm_background_jobs_start_test_job">Hefja prufuverk</string>
     <string name="etm_background_jobs_stop_test_job">Stöðva prufuverk</string>
-    <string name="etm_download_enqueue_test_download">Setja niðurhalsprófun í biðröð</string>
-    <string name="etm_download_path">Fjartengd slóð</string>
-    <string name="etm_downloader">Niðurhalsforrit</string>
     <string name="etm_migrations">Yfirfærslur (uppfærsla forrits)</string>
     <string name="etm_preferences">Kjörstillingar</string>
     <string name="etm_title">Verkfræðilegur prófunarhamur</string>
@@ -282,33 +271,23 @@
     <string name="file_keep">Halda</string>
     <string name="file_list_empty">Sendu inn eitthvað efni eða samstilltu við tækin þín!</string>
     <string name="file_list_empty_favorite_headline">Ekkert er eftirlæti ennþá</string>
-    <string name="file_list_empty_favorites_filter">Leitin skilaði engum eftirlætisskrám</string>
     <string name="file_list_empty_favorites_filter_list">Skrár og möppur sem þú merkir sem eftirlæti birtast hér.</string>
     <string name="file_list_empty_headline">Engar skrár hér</string>
     <string name="file_list_empty_headline_search">Engar niðurstöður í þessari möppu</string>
     <string name="file_list_empty_headline_server_search">Engar niðurstöður</string>
-    <string name="file_list_empty_headline_server_search_photos">Engar ljósmyndir</string>
-    <string name="file_list_empty_headline_server_search_videos">Engin myndskeið</string>
     <string name="file_list_empty_moving">Ekkert hér. Þú getur bætt við möppu.</string>
     <string name="file_list_empty_on_device">Skrár og möppur sem þú sækir birtast hér.</string>
     <string name="file_list_empty_recently_added">Fann engar nýlega viðbættar skrár</string>
-    <string name="file_list_empty_recently_added_filter">Engar nýlega viðbættar skrár fundust.</string>
     <string name="file_list_empty_recently_modified">Fann engar skrár sem breytt hefur verið síðustu 7 daga</string>
-    <string name="file_list_empty_recently_modified_filter">Engar skrár fundust sem breytt hefur verið síðustu 7 daga.</string>
     <string name="file_list_empty_search">Er þetta kannski í einhverri annarri möppu?</string>
     <string name="file_list_empty_shared">Skrár og möppur sem þú deilir birtast hér.</string>
     <string name="file_list_empty_shared_headline">Engu deilt ennþá</string>
-    <string name="file_list_empty_text_photos">Sendu inn einhverjar myndir eða virkjaðu sjálfvirka innsendingu.</string>
-    <string name="file_list_empty_text_photos_filter">Engar ljósmyndir.</string>
-    <string name="file_list_empty_text_videos">Sendu inn einhver myndskeið eða virkjaðu sjálfvirka innsendingu.</string>
-    <string name="file_list_empty_text_videos_filter">Engin myndskeið.</string>
     <string name="file_list_folder">mappa</string>
     <string name="file_list_loading">Hleð inn…</string>
     <string name="file_list_no_app_for_file_type">Ekkert forrit er uppsett til að meðhöndla þessa tegund skráa.</string>
     <string name="file_list_seconds_ago">sekúndum síðan</string>
     <string name="file_migration_checking_destination">Athuga áfangastað…</string>
     <string name="file_migration_cleaning">Hreinsun</string>
-    <string name="file_migration_dialog_title">Uppfæri slóð á gagnageymslu</string>
     <string name="file_migration_directory_already_exists">Gagnamappa er þegar til. Veldu eitt af eftirfarandi:</string>
     <string name="file_migration_failed_dir_already_exists">Nextcloud-mappa er þegar til staðar</string>
     <string name="file_migration_failed_not_enough_space">Þarf meira geymslupláss</string>
@@ -322,7 +301,6 @@
     <string name="file_migration_preparing">Undirbý yfirfærslu...</string>
     <string name="file_migration_restoring_accounts_configuration">Endurheimti aðgangsuppsetningar…</string>
     <string name="file_migration_saving_accounts_configuration">Vista aðgangsuppsetningar…</string>
-    <string name="file_migration_source_not_readable">Viltu breyta slóð á geymslurými yfir í %1$s?\n\nAthugaðu: Sækja þarf öll gögn aftur.</string>
     <string name="file_migration_source_not_readable_title">Upprunamappa er ekki lesanleg!</string>
     <string name="file_migration_updating_index">Uppfæri atriðaskrá…</string>
     <string name="file_migration_use_data_folder">Nota</string>
@@ -383,21 +361,17 @@
     <string name="local_folder_friendly_path">%1$s/%2$s</string>
     <string name="local_folder_list_empty">Það eru engar fleiri möppur.</string>
     <string name="log_send_mail_subject">%1$s atvikaskrár Android-forrita</string>
-    <string name="log_send_no_mail_app">Ekkert forrit fannst til að senda atvikaskrár. Settu upp tölvupóstforrit.</string>
     <string name="login">Skrá inn</string>
     <string name="logs_menu_delete">Eyða atvikaskrám</string>
     <string name="logs_menu_refresh">Endurnýja</string>
     <string name="logs_menu_search">Leita í atvikaskrám</string>
-    <string name="logs_menu_send">Senda atvikaskrár með tölvupósti</string>
     <string name="logs_status_filtered">Atvikaskráning: %1$d kB, fyrirspurn samsvaraði %2$d / %3$d á %4$d ms</string>
     <string name="logs_status_loading">Hleð inn…</string>
     <string name="logs_status_not_filtered">Atvikaskráning: %1$d kB, engin sía</string>
     <string name="logs_title">Aðgerðaskrár</string>
-    <string name="maintenance_mode">Þjónn í viðhaldsham</string>
     <string name="manage_space_clear_data">Hreinsa gögn</string>
     <string name="manage_space_description">Stillingum, gagnagrunni og skilríkjum vefþjóns úr gögnum %1$s verður eytt endanlega. \n\nSóttar skrár verða ekki snertar.\n\nÞetta ferli getur tekið drjúga stund.</string>
     <string name="manage_space_title">Sýsla með geymslurými</string>
-    <string name="media_err_invalid_progressive_playback">Ekki tókst að streyma margmiðlunarskrá</string>
     <string name="media_err_io">Gat ekki lesið margmiðlunarskrána</string>
     <string name="media_err_malformed">Margmiðlunarskráin er með ranga kóðun</string>
     <string name="media_err_timeout">Tilraun til að spila skrá rann út á tíma</string>
@@ -451,7 +425,6 @@
     <string name="notification_channel_upload_description">Sýnir framvindu innsendingar</string>
     <string name="notification_channel_upload_name">Senda inn tilkynningarás</string>
     <string name="notification_icon">Tilkynningatákn</string>
-    <string name="notifications_loading_activity">Hleð inn tilkynningum…</string>
     <string name="notifications_no_results_headline">Engar tilkynningar</string>
     <string name="notifications_no_results_message">Athugaðu aftur síðar.</string>
     <string name="offline_mode">Engin internettenging</string>
@@ -520,7 +493,6 @@
     <string name="prefs_recommend">Mæla með við vin</string>
     <string name="prefs_show_hidden_files">Sýna faldar skrár</string>
     <string name="prefs_sourcecode">Náðu í grunnkóðann</string>
-    <string name="prefs_storage_path">Slóð á gagnageymslu</string>
     <string name="prefs_synced_folders_local_path_title">Staðvær mappa</string>
     <string name="prefs_synced_folders_remote_path_title">Fjartengd mappa</string>
     <string name="prefs_theme_title">Þema</string>
@@ -536,7 +508,6 @@
     <string name="push_notifications_not_implemented">Ýti-tilkynningar eru óvirkar vegna ósamhæfis við séreignahugbúnað í Google Play þjónustu.</string>
     <string name="push_notifications_old_login">Engar ýtitilkynningar vegna útrunnirnnar innskráningarsetu. Íhugaðu að setja aðganginn þinn inn aftur.</string>
     <string name="push_notifications_temp_error">Ýti-tilkynningar eru ekki tiltækar þessa stundina.</string>
-    <string name="qr_could_not_be_read">Ekki tókst að lesa QR-kóða!</string>
     <string name="recommend_subject">Prófaðu %1$s á snjalltækinu þínu!</string>
     <string name="recommend_text">Mér langar til að bjóða þér að nota  %1$s á snjalltækinu þínu.\nSæktu það hér: %2$s</string>
     <string name="recommend_urls">%1$s eða %2$s</string>
@@ -577,14 +548,12 @@
     <string name="set_picture_as">Nota mynd sem</string>
     <string name="share">Deila</string>
     <string name="share_dialog_title">Deiling</string>
-    <string name="share_email_clarification">%1$s (tölvupóstur)</string>
     <string name="share_expiration_date_label">Rennur út %1$s</string>
     <string name="share_file">Deila %1$s</string>
     <string name="share_group_clarification">%s hópurinn</string>
     <string name="share_internal_link">Deila innri tengli</string>
     <string name="share_internal_link_to_file_text">Innri deilingartengill virkar bara fyrir notendur sem eiga aðgang að þessari skrá</string>
     <string name="share_internal_link_to_folder_text">Innri deilingartengill virkar bara fyrir notendur sem eiga aðgang að þessari möppu</string>
-    <string name="share_known_remote_clarification">%1$s kl. %2$s</string>
     <string name="share_link">Deila tengli</string>
     <string name="share_link_empty_password">Þú verður að setja lykilorð</string>
     <string name="share_link_file_error">Villa kom upp við að reyna að deila þessari skrá eða möppu.</string>
@@ -595,16 +564,11 @@
     <string name="share_no_expiration_date_label">Setja gildistíma</string>
     <string name="share_no_password_title">Skrá lykilorð</string>
     <string name="share_password_title">Verja með lykilorði</string>
-    <string name="share_privilege_can_edit_change">Getur breytt</string>
-    <string name="share_privilege_can_edit_create">Getur búið til</string>
-    <string name="share_privilege_can_edit_delete">Getur eytt</string>
-    <string name="share_privilege_can_share">getur deilt</string>
     <string name="share_privilege_unshare">Hætta deilingu</string>
     <string name="share_remote_clarification">%1$s (fjartengt)</string>
     <string name="share_room_clarification">%1$s (samtal)</string>
     <string name="share_send_note">Minnispunktur til viðtakanda</string>
     <string name="share_via_link_hide_download">Fela niðurhal</string>
-    <string name="share_via_link_hide_file_listing_permission_label">Fela skráalista</string>
     <string name="share_via_link_menu_password_label">Verja með lykilorði (%1$s)</string>
     <string name="share_via_link_section_title">Deila tengli</string>
     <string name="share_via_link_send_link_label">Senda tengil...</string>
@@ -668,7 +632,7 @@
     <string name="stream_not_possible_headline">Innra streymi er ekki mögulegt</string>
     <string name="stream_not_possible_message">Endilega sæktu frekar gagnamiðil eða notaðu utanaðkomandi forrit.</string>
     <string name="subject_shared_with_you">\"%1$s\" hefur verið deilt með þér</string>
-    <string name="subject_user_shared_with_you">%s deildi »%s« með þér</string>
+    <string name="subject_user_shared_with_you">%1$s deildi \"%2$s\" með þér</string>
     <string name="sync_conflicts_in_favourites_ticker">Árekstrar fundust</string>
     <string name="sync_current_folder_was_removed">Mappan %1$ser ekki lengur til</string>
     <string name="sync_fail_content">Gat ekki samstillt %1$s</string>
@@ -689,7 +653,6 @@
     <string name="sync_string_files">Skrár</string>
     <string name="synced_folder_settings_button">Stillingahnappur</string>
     <string name="synced_folders_configure_folders">Stilla möppur</string>
-    <string name="synced_folders_loading_folders">Hleð inn möppum…</string>
     <string name="synced_folders_new_info">Beinar innsendingar hafa verið algerlega endurhannaðar. Endurstilltu sjálfvirkar innsendingar beint í aðalvalmyndinni\n\nNjóttu góðs af nýju og ítarlegu viðmóti sjálfvirkra innsendinga.</string>
     <string name="synced_folders_no_results">Engar margmiðlunarmöppur fundust</string>
     <string name="synced_folders_preferences">Kjörstillingar fyrir sjálfvirkar innsendingar</string>
@@ -710,7 +673,6 @@
     <string name="trashbin_empty_message">Þú getur endurheimt eyddar skrár héðan.</string>
     <string name="trashbin_file_not_deleted">Ekki tókst að eyða %1$s skránni!</string>
     <string name="trashbin_file_not_restored">Ekki tókst að endurheimta %1$s skrána!</string>
-    <string name="trashbin_loading_failed">Mistókst að hlaða inn ruslmöppu!</string>
     <string name="trashbin_not_emptied">Ekki tókst að eyða skránum endanlega!</string>
     <string name="unread_comments">Ólesnar athugasemdir eru fyrirliggjandi</string>
     <string name="unset_encrypted">Gera dulritun óvirka</string>
@@ -754,7 +716,6 @@
     <string name="uploader_error_message_read_permission_not_granted">%1$s hefur ekki heimild til að lesa móttekna skrá</string>
     <string name="uploader_error_message_source_file_not_copied">Gat ekki afritað skrá í bráðabirgðamöppu. Prófaðu að endursenda hana.</string>
     <string name="uploader_error_message_source_file_not_found">Skrá sem valin var til sendingar fannst ekki. Athugaðu hvort skráin sé til</string>
-    <string name="uploader_error_title_file_cannot_be_uploaded">Ekki er hægt að senda þessa skrá inn</string>
     <string name="uploader_error_title_no_file_to_upload">Engin skrá til að senda inn</string>
     <string name="uploader_info_dirname">Heiti möppu</string>
     <string name="uploader_top_message">Veldu innsendingarmöppu</string>
@@ -799,7 +760,6 @@
     <string name="uploads_view_upload_status_waiting_for_charging">Bíð eftir hleðslu</string>
     <string name="user_icon">Notandi</string>
     <string name="user_info_address">Vistfang</string>
-    <string name="user_info_email">Tölvupóstur</string>
     <string name="user_info_phone">Símanúmer</string>
     <string name="user_info_twitter">Twitter</string>
     <string name="user_info_website">Vefsvæði</string>
@@ -827,7 +787,7 @@
         <item quantity="other">%1$d möppur</item>
     </plurals>
     <plurals name="file_list__footer__file">
-        <item quantity="one">%d skrá</item>
+        <item quantity="one">%1$d skrá</item>
         <item quantity="other">%1$d skrár</item>
     </plurals>
     <plurals name="synced_folders_show_hidden_folders">

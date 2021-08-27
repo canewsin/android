@@ -23,6 +23,7 @@
 package com.owncloud.android.ui.adapter;
 
 import android.content.Context;
+import android.graphics.PorterDuff;
 import android.text.TextUtils;
 import android.view.View;
 
@@ -30,7 +31,7 @@ import com.owncloud.android.R;
 import com.owncloud.android.databinding.FileDetailsShareLinkShareItemBinding;
 import com.owncloud.android.lib.resources.shares.OCShare;
 import com.owncloud.android.lib.resources.shares.ShareType;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeAvatarUtils;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.res.ResourcesCompat;
@@ -57,6 +58,11 @@ class LinkShareViewHolder extends RecyclerView.ViewHolder {
                                                                       R.drawable.ic_email,
                                                                       null));
             binding.copyLink.setVisibility(View.GONE);
+
+            binding.icon.getBackground().setColorFilter(context.getResources().getColor(R.color.nc_grey),
+                                                        PorterDuff.Mode.SRC_IN);
+            binding.icon.getDrawable().mutate().setColorFilter(context.getResources().getColor(R.color.icon_on_nc_grey),
+                                                               PorterDuff.Mode.SRC_IN);
         } else {
             if (!TextUtils.isEmpty(publicShare.getLabel())) {
                 String text = String.format(context.getString(R.string.share_link_with_label), publicShare.getLabel());
@@ -64,9 +70,9 @@ class LinkShareViewHolder extends RecyclerView.ViewHolder {
             } else {
                 binding.name.setText(R.string.share_link);
             }
-        }
 
-        ThemeUtils.colorIconImageViewWithBackground(binding.icon, context);
+            ThemeAvatarUtils.colorIconImageViewWithBackground(binding.icon, context);
+        }
 
         binding.copyLink.setOnClickListener(v -> listener.copyLink(publicShare));
         binding.overflowMenu.setOnClickListener(v -> listener.showLinkOverflowMenu(publicShare, binding.overflowMenu));

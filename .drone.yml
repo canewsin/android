@@ -5,7 +5,7 @@ name: tests-stable
 
 steps:
   - name: gplay
-    image: nextcloudci/android:android-49
+    image: nextcloudci/android8:android-61
     privileged: true
     environment:
       LOG_USERNAME:
@@ -16,20 +16,21 @@ steps:
         from_secret: GIT_USERNAME
       GIT_TOKEN:
         from_secret: GIT_TOKEN
-      ORG_GRADLE_PROJECT_coverage: ''
     commands:
       - scripts/checkIfRunDrone.sh $GIT_USERNAME $GIT_TOKEN $DRONE_PULL_REQUEST || exit 0
-      - emulator-headless -avd android-27 -no-snapshot -gpu swiftshader_indirect -no-window -no-audio -skin 500x833 &
+      - emulator -avd android -no-snapshot -gpu swiftshader_indirect -no-window -no-audio -skin 500x833 &
       - sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g src/main/res/values/setup.xml
       - sed -i s"#server#server#" gradle.properties
       - sed -i s"#1#5#" ./src/androidTest/java/com/nextcloud/client/RetryTestRule.kt
       - ./gradlew assembleGplay
       - ./gradlew assembleGplayDebug
       - scripts/wait_for_emulator.sh
-      - ./gradlew jacocoTestGplayDebugUnitTestReport && scripts/deleteOutdatedComments.sh "stable" "Unit" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN || scripts/uploadReport.sh $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER "stable" "Unit" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
+      - scripts/deleteOutdatedComments.sh "stable" "Unit" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
+      - ./gradlew jacocoTestGplayDebugUnitTestReport || scripts/uploadReport.sh $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER "stable" "Unit" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
       - ./gradlew installGplayDebugAndroidTest
       - scripts/wait_for_server.sh "server"
-      - ./gradlew createGplayDebugCoverageReport -Pandroid.testInstrumentationRunnerArguments.notAnnotation=com.owncloud.android.utils.ScreenshotTest && scripts/deleteOutdatedComments.sh "stable" "IT" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN || scripts/uploadReport.sh $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER "stable" "IT" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
+      - scripts/deleteOutdatedComments.sh "stable" "IT" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
+      - ./gradlew createGplayDebugCoverageReport -Pcoverage -Pandroid.testInstrumentationRunnerArguments.notAnnotation=com.owncloud.android.utils.ScreenshotTest || scripts/uploadReport.sh $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER "stable" "IT" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
       - ./gradlew combinedTestReport
   - name: notify
     image: drillster/drone-email
@@ -52,6 +53,7 @@ steps:
         - failure
       branch:
         - master
+        - stable-*
 
 services:
   - name: server
@@ -59,7 +61,7 @@ services:
     environment:
       EVAL: true
     commands:
-      - BRANCH='stable20' /usr/local/bin/initnc.sh
+      - BRANCH='stable21' /usr/local/bin/initnc.sh
       - echo 127.0.0.1 server >> /etc/hosts
       - su www-data -c "OC_PASS=user1 php /var/www/html/occ user:add --password-from-env --display-name='User One' user1"
       - su www-data -c "OC_PASS=user2 php /var/www/html/occ user:add --password-from-env --display-name='User Two' user2"
@@ -68,9 +70,9 @@ services:
       - su www-data -c "php /var/www/html/occ group:add users"
       - su www-data -c "php /var/www/html/occ group:adduser users user1"
       - su www-data -c "php /var/www/html/occ group:adduser users user2"
-      - su www-data -c "git clone -b stable20 https://github.com/nextcloud/activity.git /var/www/html/apps/activity/"
+      - su www-data -c "git clone -b stable21 https://github.com/nextcloud/activity.git /var/www/html/apps/activity/"
       - su www-data -c "php /var/www/html/occ app:enable activity"
-      - su www-data -c "git clone -b stable20 https://github.com/nextcloud/text.git /var/www/html/apps/text/"
+      - su www-data -c "git clone -b stable21 https://github.com/nextcloud/text.git /var/www/html/apps/text/"
       - su www-data -c "php /var/www/html/occ app:enable text"
       - su www-data -c "php /var/www/html/occ app:enable end_to_end_encryption"
       - /usr/local/bin/run.sh
@@ -78,6 +80,7 @@ services:
 trigger:
   branch:
     - master
+    - stable-*
   event:
     - push
     - pull_request
@@ -88,7 +91,7 @@ name: tests-master
 
 steps:
   - name: gplay
-    image: nextcloudci/android:android-49
+    image: nextcloudci/android8:android-61
     privileged: true
     environment:
       LOG_USERNAME:
@@ -99,22 +102,13 @@ steps:
         from_secret: GIT_USERNAME
       GIT_TOKEN:
         from_secret: GIT_TOKEN
-      ORG_GRADLE_PROJECT_coverage: ''
     commands:
       - scripts/checkIfRunDrone.sh $GIT_USERNAME $GIT_TOKEN $DRONE_PULL_REQUEST || exit 0
-      - emulator-headless -avd android-27 -no-snapshot -gpu swiftshader_indirect -no-window -no-audio -skin 500x833 &
+      - emulator -avd android -no-snapshot -gpu swiftshader_indirect -no-window -no-audio -skin 500x833 &
       - sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g src/main/res/values/setup.xml
       - sed -i s"#1#5#" ./src/androidTest/java/com/nextcloud/client/RetryTestRule.kt
-      - ./gradlew assembleGplay
-      - ./gradlew assembleGplayDebug
-      - scripts/wait_for_emulator.sh
-      - ./gradlew jacocoTestGplayDebugUnitTestReport && scripts/deleteOutdatedComments.sh "master" "Unit" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN || scripts/uploadReport.sh $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER "master" "Unit" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
-      - ./gradlew installGplayDebugAndroidTest
-      - scripts/wait_for_server.sh "server"
-      - ./gradlew createGplayDebugCoverageReport -Pandroid.testInstrumentationRunnerArguments.notAnnotation=com.owncloud.android.utils.ScreenshotTest && scripts/deleteOutdatedComments.sh "master" "IT" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN || scripts/uploadReport.sh $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER "master" "IT" $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
-      - ./gradlew combinedTestReport
-      - curl -o codecov.sh https://codecov.io/bash
-      - bash ./codecov.sh -t fc506ba4-33c3-43e4-a760-aada38c24fd5
+      - scripts/runCombinedTest.sh $GIT_USERNAME $GIT_TOKEN $DRONE_PULL_REQUEST $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER
+
   - name: notify
     image: drillster/drone-email
     settings:
@@ -136,6 +130,7 @@ steps:
         - failure
       branch:
         - master
+        - stable-*
 
 services:
   - name: server
@@ -163,115 +158,7 @@ services:
 trigger:
   branch:
     - master
-  event:
-    - push
-    - pull_request
----
-kind: pipeline
-type: docker
-name: screenshots-stable
-
-steps:
-  - name: gplay
-    image: nextcloudci/android:android-49
-    privileged: true
-    environment:
-      LOG_USERNAME:
-        from_secret: LOG_USERNAME
-      LOG_PASSWORD:
-        from_secret: LOG_PASSWORD
-      GIT_USERNAME:
-        from_secret: GIT_USERNAME
-      GIT_TOKEN:
-        from_secret: GIT_TOKEN
-      ORG_GRADLE_PROJECT_coverage: ''
-    commands:
-      - scripts/checkIfRunDrone.sh $GIT_USERNAME $GIT_TOKEN $DRONE_PULL_REQUEST || exit 0
-      - emulator-headless -avd android-27 -no-snapshot -gpu swiftshader_indirect -no-window -no-audio -skin 500x833 &
-      - sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g src/main/res/values/setup.xml
-      - ./gradlew assembleGplayDebug
-      - scripts/wait_for_emulator.sh
-      - ./gradlew installGplayDebugAndroidTest
-      - scripts/runAllScreenshotCombinations "stable" false
-  - name: notify
-    image: drillster/drone-email
-    settings:
-      port: 587
-      from: nextcloud-drone@kaminsky.me
-      recipients_only: true
-      username:
-        from_secret: EMAIL_USERNAME
-      password:
-        from_secret: EMAIL_PASSWORD
-      recipients:
-        from_secret: EMAIL_RECIPIENTS
-      host:
-        from_secret: EMAIL_HOST
-    when:
-      event:
-        - push
-      status:
-        - failure
-      branch:
-        - master
-trigger:
-  branch:
-    - master
-  event:
-    - push
-    - pull_request
----
-kind: pipeline
-type: docker
-name: screenshots-master
-
-steps:
-  - name: gplay
-    image: nextcloudci/android:android-49
-    privileged: true
-    environment:
-      LOG_USERNAME:
-        from_secret: LOG_USERNAME
-      LOG_PASSWORD:
-        from_secret: LOG_PASSWORD
-      GIT_USERNAME:
-        from_secret: GIT_USERNAME
-      GIT_TOKEN:
-        from_secret: GIT_TOKEN
-      ORG_GRADLE_PROJECT_coverage: ''
-    commands:
-      - scripts/checkIfRunDrone.sh $GIT_USERNAME $GIT_TOKEN $DRONE_PULL_REQUEST || exit 0
-      - emulator-headless -avd android-27 -no-snapshot -gpu swiftshader_indirect -no-window -no-audio -skin 500x833 &
-      - sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g src/main/res/values/setup.xml
-      - ./gradlew assembleGplayDebug
-      - scripts/wait_for_emulator.sh
-      - ./gradlew installGplayDebugAndroidTest
-      - sed -i s"#5#1#" ./src/androidTest/java/com/nextcloud/client/RetryTestRule.kt
-      - scripts/runAllScreenshotCombinations "master" false
-  - name: notify
-    image: drillster/drone-email
-    settings:
-      port: 587
-      from: nextcloud-drone@kaminsky.me
-      recipients_only: true
-      username:
-        from_secret: EMAIL_USERNAME
-      password:
-        from_secret: EMAIL_PASSWORD
-      recipients:
-        from_secret: EMAIL_RECIPIENTS
-      host:
-        from_secret: EMAIL_HOST
-    when:
-      event:
-        - push
-      status:
-        - failure
-      branch:
-        - master
-trigger:
-  branch:
-    - master
+    - stable-*
   event:
     - push
     - pull_request
@@ -282,7 +169,7 @@ name: analysis
 
 steps:
   - name: analysis
-    image: nextcloudci/android:android-49
+    image: nextcloudci/android8:android-61
     environment:
       GIT_USERNAME:
         from_secret: GIT_USERNAME
@@ -318,43 +205,12 @@ steps:
         - failure
       branch:
         - master
+        - stable-*
 
 trigger:
   branch:
     - master
+    - stable-*
   event:
     - push
-    - pull_request
----
-kind: pipeline
-type: docker
-name: qa
-
-steps:
-  - name: qa
-    image: nextcloudci/android:android-49
-    privileged: true
-    environment:
-      LOG_USERNAME:
-        from_secret: LOG_USERNAME
-      LOG_PASSWORD:
-        from_secret: LOG_PASSWORD
-      GIT_USERNAME:
-        from_secret: GIT_USERNAME
-      GIT_TOKEN:
-        from_secret: GIT_TOKEN
-      KS_PASS:
-        from_secret: KS_PASS
-      KEY_PASS:
-        from_secret: KEY_PASS
-    commands:
-      - scripts/checkIfRunDrone.sh $GIT_USERNAME $GIT_TOKEN $DRONE_PULL_REQUEST || exit 0
-      - sed -i "/qa/,/\}/ s/versionCode .*/versionCode $DRONE_BUILD_NUMBER/" build.gradle
-      - sed -i "/qa/,/\}/ s/versionName .*/versionName \"$DRONE_BUILD_NUMBER\"/" build.gradle
-      - ./gradlew assembleQaDebug
-      - $(find /opt/android-sdk-linux/build-tools/*/apksigner | sort | tail -n1) sign  --ks-pass pass:$KS_PASS --key-pass pass:$KEY_PASS --ks-key-alias key0 --ks scripts/QA_keystore.jks build/outputs/apk/qa/debug/qa-debug-*.apk
-      - scripts/uploadArtifact.sh $LOG_USERNAME $LOG_PASSWORD $DRONE_BUILD_NUMBER $DRONE_PULL_REQUEST $GIT_USERNAME $GIT_TOKEN
-
-trigger:
-  event:
     - pull_request

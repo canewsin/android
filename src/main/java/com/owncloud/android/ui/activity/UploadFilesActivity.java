@@ -51,7 +51,11 @@ import com.owncloud.android.ui.dialog.SortingOrderDialogFragment;
 import com.owncloud.android.ui.fragment.ExtendedListFragment;
 import com.owncloud.android.ui.fragment.LocalFileListFragment;
 import com.owncloud.android.utils.FileSortOrder;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeButtonUtils;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
+import com.owncloud.android.utils.theme.ThemeDrawableUtils;
+import com.owncloud.android.utils.theme.ThemeToolbarUtils;
+import com.owncloud.android.utils.theme.ThemeUtils;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -78,6 +82,7 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
 
     private static final String KEY_ALL_SELECTED = UploadFilesActivity.class.getCanonicalName() + ".KEY_ALL_SELECTED";
     public final static String KEY_LOCAL_FOLDER_PICKER_MODE = UploadFilesActivity.class.getCanonicalName() + ".LOCAL_FOLDER_PICKER_MODE";
+    public static final String LOCAL_BASE_PATH = UploadFilesActivity.class.getCanonicalName() + ".LOCAL_BASE_PATH";
     public static final String EXTRA_CHOSEN_FILES = UploadFilesActivity.class.getCanonicalName() + ".EXTRA_CHOSEN_FILES";
     public static final String KEY_DIRECTORY_PATH = UploadFilesActivity.class.getCanonicalName() + ".KEY_DIRECTORY_PATH";
 
@@ -104,6 +109,7 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
     private Menu mOptionsMenu;
     private SearchView mSearchView;
     private Spinner mBehaviourSpinner;
+    private MaterialButton uploadButton;
 
     /**
      * Helper to launch the UploadFilesActivity for which you would like a result when it finished. Your
@@ -171,12 +177,13 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
 
         // Set input controllers
         MaterialButton cancelButton = findViewById(R.id.upload_files_btn_cancel);
-        cancelButton.setTextColor(ThemeUtils.primaryColor(this, true));
+        cancelButton.setTextColor(ThemeColorUtils.primaryColor(this, true));
         cancelButton.setOnClickListener(this);
 
-        MaterialButton uploadButton = findViewById(R.id.upload_files_btn_upload);
-        ThemeUtils.colorPrimaryButton(uploadButton, this);
+        uploadButton = findViewById(R.id.upload_files_btn_upload);
+        ThemeButtonUtils.colorPrimaryButton(uploadButton, this);
         uploadButton.setOnClickListener(this);
+        uploadButton.setEnabled(false);
 
         int localBehaviour = preferences.getUploaderBehaviour();
 
@@ -208,7 +215,7 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
             actionBar.setDisplayHomeAsUpEnabled(mCurrentDir != null);
             actionBar.setDisplayShowTitleEnabled(false);
 
-            ThemeUtils.tintBackButton(actionBar, this);
+            ThemeToolbarUtils.tintBackButton(actionBar, this);
         }
 
         showToolbarSpinner();
@@ -268,11 +275,11 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
             setSelectAllMenuItem(selectAll, mSelectAll);
         }
 
-        int fontColor = ThemeUtils.appBarPrimaryFontColor(this);
+        int fontColor = ThemeColorUtils.appBarPrimaryFontColor(this);
         final MenuItem item = menu.findItem(R.id.action_search);
         mSearchView = (SearchView) MenuItemCompat.getActionView(item);
-        ThemeUtils.themeSearchView(mSearchView, this);
-        ThemeUtils.tintDrawable(menu.findItem(R.id.action_choose_storage_path).getIcon(), fontColor);
+        ThemeToolbarUtils.themeSearchView(mSearchView, this);
+        ThemeDrawableUtils.tintDrawable(menu.findItem(R.id.action_choose_storage_path).getIcon(), fontColor);
 
         mSearchView.setOnSearchClickListener(v -> mToolbarSpinner.setVisibility(View.GONE));
 
@@ -282,28 +289,23 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
-        switch (item.getItemId()) {
-            case android.R.id.home: {
-                if (mCurrentDir != null && mCurrentDir.getParentFile() != null) {
-                    onBackPressed();
-                }
-                break;
+        int itemId = item.getItemId();
+
+        if (itemId == android.R.id.home) {
+            if (mCurrentDir != null && mCurrentDir.getParentFile() != null) {
+                onBackPressed();
             }
-            case R.id.action_select_all: {
-                item.setChecked(!item.isChecked());
-                mSelectAll = item.isChecked();
-                setSelectAllMenuItem(item, mSelectAll);
-                mFileListFragment.selectAllFiles(item.isChecked());
-                break;
-            }
-            case R.id.action_choose_storage_path: {
-                showLocalStoragePathPickerDialog();
-                break;
-            }
-            default:
-                retval = super.onOptionsItemSelected(item);
-                break;
+        } else if (itemId == R.id.action_select_all) {
+            item.setChecked(!item.isChecked());
+            mSelectAll = item.isChecked();
+            setSelectAllMenuItem(item, mSelectAll);
+            mFileListFragment.selectAllFiles(item.isChecked());
+        } else if (itemId == R.id.action_choose_storage_path) {
+            showLocalStoragePathPickerDialog();
+        } else {
+            retval = super.onOptionsItemSelected(item);
         }
+
         return retval;
     }
 
@@ -413,7 +415,8 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
         if (checked) {
             selectAll.setIcon(R.drawable.ic_select_none);
         } else {
-            selectAll.setIcon(ThemeUtils.tintDrawable(R.drawable.ic_select_all, ThemeUtils.primaryColor(this)));
+            selectAll.setIcon(
+                ThemeDrawableUtils.tintDrawable(R.drawable.ic_select_all, ThemeColorUtils.primaryColor(this)));
         }
     }
 
@@ -444,11 +447,12 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
 
             if (requestCode == FileDisplayActivity.REQUEST_CODE__UPLOAD_FROM_CAMERA) {
                 data.putExtra(EXTRA_CHOSEN_FILES, new String[]{filesToUpload[0]});
-                setResult(RESULT_OK_AND_MOVE, data);
+                setResult(RESULT_OK_AND_DELETE, data);
 
-                preferences.setUploaderBehaviour(FileUploader.LOCAL_BEHAVIOUR_MOVE);
+                preferences.setUploaderBehaviour(FileUploader.LOCAL_BEHAVIOUR_DELETE);
             } else {
                 data.putExtra(EXTRA_CHOSEN_FILES, mFileListFragment.getCheckedFilePaths());
+                data.putExtra(LOCAL_BASE_PATH, mCurrentDir.getAbsolutePath());
 
                 // set result code
                 switch (mBehaviourSpinner.getSelectedItemPosition()) {
@@ -541,7 +545,7 @@ public class UploadFilesActivity extends DrawerActivity implements LocalFileList
      */
     @Override
     public void onFileClick(File file) {
-        // nothing to do
+        uploadButton.setEnabled(mFileListFragment.getCheckedFilesCount() > 0);
     }
 
     /**

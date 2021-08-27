@@ -66,9 +66,10 @@ import com.owncloud.android.ui.preview.PreviewImageActivity;
 import com.owncloud.android.ui.preview.PreviewImageFragment;
 import com.owncloud.android.utils.ErrorMessageAdapter;
 import com.owncloud.android.utils.MimeTypeUtil;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
 
 import java.io.File;
+import java.security.SecureRandom;
 import java.util.AbstractList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -80,6 +81,7 @@ import javax.inject.Inject;
 import androidx.core.app.NotificationCompat;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 import dagger.android.AndroidInjection;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 public class FileDownloader extends Service
         implements OnDatatransferProgressListener, OnAccountsUpdateListener {
@@ -117,6 +119,8 @@ public class FileDownloader extends Service
 
     private long conflictUploadId;
 
+    public boolean mStartedDownload = false;
+
     @Inject UserAccountManager accountManager;
     @Inject UploadsStorageManager uploadsStorageManager;
     @Inject LocalBroadcastManager localBroadcastManager;
@@ -149,7 +153,7 @@ public class FileDownloader extends Service
                 .setContentText(getApplicationContext().getResources().getString(R.string.foreground_service_download))
                 .setSmallIcon(R.drawable.notification_icon)
                 .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.notification_icon))
-                .setColor(ThemeUtils.primaryColor(getApplicationContext(), true));
+                .setColor(ThemeColorUtils.primaryColor(getApplicationContext(), true));
 
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
             builder.setChannelId(NotificationUtils.NOTIFICATION_CHANNEL_DOWNLOAD);
@@ -178,7 +182,6 @@ public class FileDownloader extends Service
         // remove AccountsUpdatedListener
         AccountManager am = AccountManager.get(getApplicationContext());
         am.removeOnAccountsUpdatedListener(this);
-
         super.onDestroy();
     }
 
@@ -418,9 +421,17 @@ public class FileDownloader extends Service
                     mService.downloadFile(next);
                 }
             }
-            Log_OC.d(TAG, "Stopping after command with id " + msg.arg1);
-            mService.stopForeground(true);
-            mService.stopSelf(msg.arg1);
+            mService.mStartedDownload=false;
+
+            (new Handler()).postDelayed(() -> {
+                if(!mService.mStartedDownload){
+                    mService.mNotificationManager.cancel(R.string.downloader_download_in_progress_ticker);
+                }
+                Log_OC.d(TAG, "Stopping after command with id " + msg.arg1);
+                mService.mNotificationManager.cancel(FOREGROUND_SERVICE_ID);
+                mService.stopForeground(true);
+                mService.stopSelf(msg.arg1);
+            }, 2000);
         }
     }
 
@@ -432,6 +443,7 @@ public class FileDownloader extends Service
      */
     private void downloadFile(String downloadKey) {
 
+        mStartedDownload = true;
         mCurrentDownload = mPendingDownloads.get(downloadKey);
 
         if (mCurrentDownload != null) {
@@ -455,10 +467,7 @@ public class FileDownloader extends Service
 
                     // always get client from client manager, to get fresh credentials in case
                     // of update
-                    OwnCloudAccount ocAccount = new OwnCloudAccount(
-                            mCurrentAccount,
-                            this
-                    );
+                    OwnCloudAccount ocAccount = new OwnCloudAccount(mCurrentAccount, this);
                     mDownloadClient = OwnCloudClientManagerFactory.getDefaultSingleton().
                             getClientFor(ocAccount, this);
 
@@ -476,6 +485,10 @@ public class FileDownloader extends Service
                 } finally {
                     Pair<DownloadFileOperation, String> removeResult = mPendingDownloads.removePayload(
                         mCurrentAccount.name, mCurrentDownload.getRemotePath());
+
+                    if (downloadResult == null) {
+                        downloadResult = new RemoteOperationResult(new RuntimeException("Error downloading…"));
+                    }
 
                     /// notify result
                     notifyDownloadResult(mCurrentDownload, downloadResult);
@@ -502,6 +515,17 @@ public class FileDownloader extends Service
      */
     private void saveDownloadedFile() {
         OCFile file = mStorageManager.getFileById(mCurrentDownload.getFile().getFileId());
+
+        if (file == null) {
+            // try to get file via path, needed for overwriting existing files on conflict dialog
+            file = mStorageManager.getFileByDecryptedRemotePath(mCurrentDownload.getFile().getRemotePath());
+        }
+
+        if (file == null) {
+            Log_OC.e(this, "Could not save " + mCurrentDownload.getFile().getRemotePath());
+            return;
+        }
+
         long syncDate = System.currentTimeMillis();
         file.setLastSyncDateForProperties(syncDate);
         file.setLastSyncDateForData(syncDate);
@@ -600,17 +624,18 @@ public class FileDownloader extends Service
      * @param downloadResult Result of the download operation.
      * @param download       Finished download operation
      */
+    @SuppressFBWarnings("DMI")
     private void notifyDownloadResult(DownloadFileOperation download,
                                       RemoteOperationResult downloadResult) {
         if (mNotificationManager == null) {
             mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         }
 
-        if (mNotificationManager != null) {
-            mNotificationManager.cancel(R.string.downloader_download_in_progress_ticker);
-        }
-
         if (!downloadResult.isCancelled()) {
+            if (downloadResult.isSuccess()) {
+                // Dont show notification except an error has occured.
+                return;
+            }
             int tickerId = downloadResult.isSuccess() ?
                     R.string.downloader_download_succeeded_ticker : R.string.downloader_download_failed_ticker;
 
@@ -639,7 +664,7 @@ public class FileDownloader extends Service
                     download, getResources()));
 
             if (mNotificationManager != null) {
-                mNotificationManager.notify(tickerId, mNotificationBuilder.build());
+                mNotificationManager.notify((new SecureRandom()).nextInt(), mNotificationBuilder.build());
 
                 // Remove success notification
                 if (downloadResult.isSuccess()) {

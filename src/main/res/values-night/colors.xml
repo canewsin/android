@@ -22,6 +22,7 @@
 
     <color name="text_color">#E3E3E3</color>
     <color name="text_color_inverse">#000000</color>
+    <color name="disabled_text">#ff6F6F6F</color>
     <color name="secondary_text_color">#A5A5A5</color>
     <color name="list_divider_background">#222222</color>
 
@@ -32,6 +33,8 @@
     <color name="primary_button_text_color">#000000</color>
     <color name="bg_elevation_one">#2D2D2D</color>
     <color name="grey_200">#818181</color>
+    <color name="nc_grey">#222222</color>
+    <color name="icon_on_nc_grey">#ffffff</color>
 
     <!-- Multiselect backgrounds -->
     <color name="action_mode_background">@color/appbar</color>

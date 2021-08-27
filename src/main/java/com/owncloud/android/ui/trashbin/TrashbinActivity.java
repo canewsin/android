@@ -23,12 +23,14 @@
  */
 package com.owncloud.android.ui.trashbin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.client.account.CurrentAccountProvider;
@@ -36,6 +38,7 @@ import com.nextcloud.client.account.User;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ClientFactory;
 import com.nextcloud.client.preferences.AppPreferences;
+import com.nextcloud.java.util.Optional;
 import com.owncloud.android.R;
 import com.owncloud.android.databinding.TrashbinActivityBinding;
 import com.owncloud.android.lib.resources.trashbin.model.TrashbinFile;
@@ -46,7 +49,7 @@ import com.owncloud.android.ui.dialog.SortingOrderDialogFragment;
 import com.owncloud.android.ui.interfaces.TrashbinActivityInterface;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.FileSortOrder;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeLayoutUtils;
 
 import java.util.List;
 
@@ -67,6 +70,7 @@ public class TrashbinActivity extends DrawerActivity implements
     TrashbinContract.View,
     Injectable {
 
+    public static final int EMPTY_LIST_COUNT = 1;
     @Inject AppPreferences preferences;
     @Inject CurrentAccountProvider accountProvider;
     @Inject ClientFactory clientFactory;
@@ -81,8 +85,21 @@ public class TrashbinActivity extends DrawerActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final User user = accountProvider.getUser();
-        final RemoteTrashbinRepository trashRepository = new RemoteTrashbinRepository(user, clientFactory);
+        final User currentUser = getUser().orElse(accountProvider.getUser());
+        final String targetAccount = getIntent().getStringExtra(Intent.EXTRA_USER);
+        if (targetAccount != null && !currentUser.nameEquals(targetAccount)) {
+            final Optional<User> targetUser = getUserAccountManager().getUser(targetAccount);
+            if (targetUser.isPresent()) {
+                setUser(targetUser.get());
+            } else {
+                Toast.makeText(this, R.string.associated_account_not_found, Toast.LENGTH_LONG).show();
+                finish();
+                return;
+            }
+        }
+
+        final RemoteTrashbinRepository trashRepository =
+            new RemoteTrashbinRepository(getUser().orElse(accountProvider.getUser()), clientFactory);
         trashbinPresenter = new TrashbinPresenter(trashRepository, this);
 
         binding = TrashbinActivityBinding.inflate(getLayoutInflater());
@@ -117,14 +134,14 @@ public class TrashbinActivity extends DrawerActivity implements
             getStorageManager(),
             preferences,
             this,
-            getUserAccountManager().getUser()
+            getUser().orElse(accountProvider.getUser())
         );
         recyclerView.setAdapter(trashbinListAdapter);
         recyclerView.setHasFixedSize(true);
         recyclerView.setHasFooter(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        ThemeUtils.colorSwipeRefreshLayout(this, binding.swipeContainingList);
+        ThemeLayoutUtils.colorSwipeRefreshLayout(this, binding.swipeContainingList);
         binding.swipeContainingList.setOnRefreshListener(this::loadFolder);
 
         findViewById(R.id.sort_button).setOnClickListener(l ->
@@ -138,31 +155,30 @@ public class TrashbinActivity extends DrawerActivity implements
     }
 
     protected void loadFolder() {
-        binding.swipeContainingList.setRefreshing(true);
+        if (trashbinListAdapter.getItemCount() > EMPTY_LIST_COUNT) {
+            binding.swipeContainingList.setRefreshing(true);
+        } else {
+            showInitialLoading();
+        }
         trashbinPresenter.loadFolder();
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (isDrawerOpen()) {
-                    closeDrawer();
-                } else if (trashbinPresenter.isRoot()) {
-                    onBackPressed();
-                } else {
-                    openDrawer();
-                }
-                break;
-
-            case R.id.action_empty_trashbin:
-                trashbinPresenter.emptyTrashbin();
-                break;
-
-            default:
-                retval = super.onOptionsItemSelected(item);
-                break;
+        int itemId = item.getItemId();
+        if (itemId == android.R.id.home) {
+            if (isDrawerOpen()) {
+                closeDrawer();
+            } else if (trashbinPresenter.isRoot()) {
+                onBackPressed();
+            } else {
+                openDrawer();
+            }
+        } else if (itemId == R.id.action_empty_trashbin) {
+            trashbinPresenter.emptyTrashbin();
+        } else {
+            retval = super.onOptionsItemSelected(item);
         }
 
         return retval;
@@ -236,7 +252,8 @@ public class TrashbinActivity extends DrawerActivity implements
         if (active) {
             trashbinListAdapter.setTrashbinFiles(trashbinFiles, true);
             binding.swipeContainingList.setRefreshing(false);
-            binding.emptyList.emptyListProgress.setVisibility(View.GONE);
+            binding.loadingContent.setVisibility(View.GONE);
+            binding.list.setVisibility(View.VISIBLE);
         }
     }
 
@@ -262,9 +279,28 @@ public class TrashbinActivity extends DrawerActivity implements
         }
     }
 
+    @VisibleForTesting
+    public void showInitialLoading() {
+        binding.loadingContent.setVisibility(View.VISIBLE);
+        binding.list.setVisibility(View.GONE);
+    }
+
+    @VisibleForTesting
+    public void showUser() {
+        binding.loadingContent.setVisibility(View.GONE);
+        binding.list.setVisibility(View.VISIBLE);
+        binding.swipeContainingList.setRefreshing(false);
+
+        binding.emptyList.emptyListViewText.setText(getUser().get().getAccountName());
+        binding.emptyList.emptyListViewText.setVisibility(View.VISIBLE);
+        binding.emptyList.emptyListView.setVisibility(View.VISIBLE);
+    }
+
     @Override
     public void showError(int message) {
         if (active) {
+            binding.loadingContent.setVisibility(View.GONE);
+            binding.list.setVisibility(View.VISIBLE);
             binding.swipeContainingList.setRefreshing(false);
 
             binding.emptyList.emptyListViewHeadline.setText(R.string.common_error);
@@ -275,7 +311,6 @@ public class TrashbinActivity extends DrawerActivity implements
             binding.emptyList.emptyListViewText.setVisibility(View.VISIBLE);
             binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
             binding.emptyList.emptyListView.setVisibility(View.VISIBLE);
-            binding.emptyList.emptyListProgress.setVisibility(View.GONE);
         }
     }
 }

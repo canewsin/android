@@ -32,14 +32,13 @@ import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
 import com.owncloud.android.R;
+import com.owncloud.android.databinding.TextFilePreviewBinding;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.utils.Log_OC;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
@@ -47,7 +46,7 @@ import com.owncloud.android.ui.fragment.FileFragment;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
 import com.owncloud.android.utils.StringUtils;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
 
 import javax.inject.Inject;
 
@@ -79,22 +78,16 @@ import io.noties.prism4j.annotations.PrismBundle;
 public abstract class PreviewTextFragment extends FileFragment implements SearchView.OnQueryTextListener, Injectable {
     private static final String TAG = PreviewTextFragment.class.getSimpleName();
 
-
-    protected SearchView mSearchView;
-    protected String mSearchQuery = "";
-    protected boolean mSearchOpen;
-    protected TextView mTextPreview;
-    protected Handler mHandler;
-    protected String mOriginalText;
-    protected View mMultiListContainer;
-
-    private TextView mMultiListMessage;
-    private TextView mMultiListHeadline;
-    private ImageView mMultiListIcon;
-    private ProgressBar mMultiListProgress;
+    protected SearchView searchView;
+    protected String searchQuery = "";
+    protected boolean searchOpen;
+    protected Handler handler;
+    protected String originalText;
 
     @Inject UserAccountManager accountManager;
     @Inject DeviceInfo deviceInfo;
+
+    protected TextFilePreviewBinding binding;
 
     /**
      * {@inheritDoc}
@@ -105,31 +98,12 @@ public abstract class PreviewTextFragment extends FileFragment implements Search
         super.onCreateView(inflater, container, savedInstanceState);
         Log_OC.e(TAG, "onCreateView");
 
-        View ret = inflater.inflate(R.layout.text_file_preview, container, false);
-        mTextPreview = ret.findViewById(R.id.text_preview);
+        binding = TextFilePreviewBinding.inflate(inflater, container, false);
+        View view = binding.getRoot();
 
-        setupMultiView(ret);
-        setMultiListLoadingMessage();
+        binding.emptyListProgress.setVisibility(View.VISIBLE);
 
-        return ret;
-    }
-
-    private void setupMultiView(View view) {
-        mMultiListContainer = view.findViewById(R.id.empty_list_view);
-        mMultiListMessage = view.findViewById(R.id.empty_list_view_text);
-        mMultiListHeadline = view.findViewById(R.id.empty_list_view_headline);
-        mMultiListIcon = view.findViewById(R.id.empty_list_icon);
-        mMultiListProgress = view.findViewById(R.id.empty_list_progress);
-    }
-
-    private void setMultiListLoadingMessage() {
-        if (mMultiListContainer != null) {
-            mMultiListHeadline.setText(R.string.file_list_loading);
-            mMultiListMessage.setText("");
-
-            mMultiListIcon.setVisibility(View.GONE);
-            mMultiListProgress.setVisibility(View.VISIBLE);
-        }
+        return view;
     }
 
     @Override
@@ -138,6 +112,12 @@ public abstract class PreviewTextFragment extends FileFragment implements Search
         Log_OC.e(TAG, "onStart");
 
         loadAndShowTextPreview();
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     abstract void loadAndShowTextPreview();
@@ -156,28 +136,28 @@ public abstract class PreviewTextFragment extends FileFragment implements Search
 
 
     private void performSearch(final String query, int delay) {
-        mHandler.removeCallbacksAndMessages(null);
+        handler.removeCallbacksAndMessages(null);
 
-        if (mOriginalText != null) {
+        if (originalText != null) {
             if (getActivity() instanceof FileDisplayActivity) {
                 FileDisplayActivity fileDisplayActivity = (FileDisplayActivity) getActivity();
                 fileDisplayActivity.setSearchQuery(query);
             }
-            mHandler.postDelayed(() -> {
+            handler.postDelayed(() -> {
                 if (query != null && !query.isEmpty()) {
                     if (getContext() != null && getContext().getResources() != null) {
-                        String coloredText = StringUtils.searchAndColor(mOriginalText, query,
-                            getContext().getResources().getColor(R.color.primary));
-                        mTextPreview.setText(Html.fromHtml(coloredText.replace("\n", "<br \\>")));
+                        String coloredText = StringUtils.searchAndColor(originalText, query,
+                                                                        getContext().getResources().getColor(R.color.primary));
+                        binding.textPreview.setText(Html.fromHtml(coloredText.replace("\n", "<br \\>")));
                     }
                 } else {
-                    setText(mTextPreview, mOriginalText, getFile(), getActivity());
+                    setText(binding.textPreview, originalText, getFile(), getActivity());
                 }
             }, delay);
         }
 
-        if (delay == 0 && mSearchView != null) {
-            mSearchView.clearFocus();
+        if (delay == 0 && searchView != null) {
+            searchView.clearFocus();
         }
     }
 
@@ -185,13 +165,13 @@ public abstract class PreviewTextFragment extends FileFragment implements Search
         Prism4j prism4j = new Prism4j(new MarkwonGrammarLocator());
         Prism4jTheme prism4jTheme = Prism4jThemeDefault.create();
         TaskListDrawable drawable = new TaskListDrawable(Color.GRAY, Color.GRAY, Color.WHITE);
-        drawable.setColorFilter(ThemeUtils.primaryColor(activity, true), PorterDuff.Mode.SRC_ATOP);
+        drawable.setColorFilter(ThemeColorUtils.primaryColor(activity, true), PorterDuff.Mode.SRC_ATOP);
 
         final Markwon markwon = Markwon.builder(activity)
             .usePlugin(new AbstractMarkwonPlugin() {
                 @Override
                 public void configureTheme(@NonNull MarkwonTheme.Builder builder) {
-                    builder.linkColor(ThemeUtils.primaryColor(activity, true));
+                    builder.linkColor(ThemeColorUtils.primaryColor(activity, true));
                     builder.headingBreakHeight(0);
                 }
 

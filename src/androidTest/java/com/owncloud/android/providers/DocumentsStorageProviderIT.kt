@@ -6,7 +6,6 @@ import androidx.documentfile.provider.DocumentFile
 import com.owncloud.android.AbstractOnServerIT
 import com.owncloud.android.R
 import com.owncloud.android.datamodel.OCFile.ROOT_PATH
-import com.owncloud.android.lib.common.network.WebdavUtils
 import com.owncloud.android.providers.DocumentsProviderUtils.assertExistsOnServer
 import com.owncloud.android.providers.DocumentsProviderUtils.assertListFilesEquals
 import com.owncloud.android.providers.DocumentsProviderUtils.assertReadEquals
@@ -21,7 +20,7 @@ import kotlinx.coroutines.runBlocking
 import net.bytebuddy.utility.RandomString
 import org.apache.commons.httpclient.HttpStatus
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity
-import org.apache.commons.httpclient.methods.PutMethod
+import org.apache.jackrabbit.webdav.client.methods.PutMethod
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
@@ -183,6 +182,10 @@ class DocumentsStorageProviderIT : AbstractOnServerIT() {
         val file1 = rootDir.createFile("text/plain", RandomString.make())!!
         file1.assertRegularFile(size = 0L)
 
+        val createdETag = file1.getOCFile(storageManager)!!.etagOnServer
+
+        assertTrue(createdETag.isNotEmpty())
+
         val content1 = "initial content".toByteArray()
 
         // write content bytes to file
@@ -190,18 +193,25 @@ class DocumentsStorageProviderIT : AbstractOnServerIT() {
             it!!.write(content1)
         }
 
+        // refresh
+        while (file1.getOCFile(storageManager)!!.etagOnServer == createdETag) {
+            shortSleep()
+            rootDir.listFiles()
+        }
+
         val remotePath = file1.getOCFile(storageManager)!!.remotePath
 
         val content2 = "new content".toByteArray()
 
         // modify content on server side
-        val putMethod = PutMethod(client.webdavUri.toString() + WebdavUtils.encodePath(remotePath))
-        putMethod.setRequestEntity(ByteArrayRequestEntity(content2))
+        val putMethod = PutMethod(client.getFilesDavUri(remotePath))
+        putMethod.requestEntity = ByteArrayRequestEntity(content2)
         assertEquals(HttpStatus.SC_NO_CONTENT, client.executeMethod(putMethod))
         client.exhaustResponse(putMethod.responseBodyAsStream)
         putMethod.releaseConnection() // let the connection available for other methods
 
         // read back content bytes
-        assertReadEquals(content2, contentResolver.openInputStream(file1.uri))
+        val bytes = contentResolver.openInputStream(file1.uri)?.readBytes() ?: ByteArray(0)
+        assertEquals(String(content2), String(bytes))
     }
 }

@@ -34,6 +34,7 @@ import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.DirectEditing;
 import com.owncloud.android.lib.common.OwnCloudClient;
 import com.owncloud.android.lib.common.OwnCloudClientFactory;
+import com.owncloud.android.lib.common.UserInfo;
 import com.owncloud.android.lib.common.accounts.AccountUtils;
 import com.owncloud.android.lib.common.operations.RemoteOperation;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
@@ -242,6 +243,8 @@ public class RefreshFolderOperation extends RemoteOperation {
             if (result.isSuccess()) {
                 // request for the synchronization of KEPT-IN-SYNC file contents
                 startContentSynchronizations(mFilesToSyncContents);
+            } else {
+                mLocalFolder.setEtag("");
             }
 
             mLocalFolder.setLastSyncDateForData(System.currentTimeMillis());
@@ -278,12 +281,17 @@ public class RefreshFolderOperation extends RemoteOperation {
     }
 
     private void updateUserProfile() {
-        GetUserProfileOperation update = new GetUserProfileOperation();
-        RemoteOperationResult result = update.execute(mStorageManager, mContext);
-        if (!result.isSuccess()) {
-            Log_OC.w(TAG, "Couldn't update user profile from server");
-        } else {
-            Log_OC.i(TAG, "Got display name: " + result.getData().get(0));
+        try {
+            NextcloudClient nextcloudClient = OwnCloudClientFactory.createNextcloudClient(mAccount, mContext);
+
+            RemoteOperationResult<UserInfo> result = new GetUserProfileOperation(mStorageManager).execute(nextcloudClient);
+            if (!result.isSuccess()) {
+                Log_OC.w(TAG, "Couldn't update user profile from server");
+            } else {
+                Log_OC.i(TAG, "Got display name: " + result.getResultData());
+            }
+        } catch (AccountUtils.AccountNotFoundException e) {
+            Log_OC.e(this, "Error updating profile", e);
         }
     }
 
@@ -292,8 +300,7 @@ public class RefreshFolderOperation extends RemoteOperation {
         String oldDirectEditingEtag = arbitraryDataProvider.getValue(mAccount,
                                                                      ArbitraryDataProvider.DIRECT_EDITING_ETAG);
 
-        GetCapabilitiesOperation getCapabilities = new GetCapabilitiesOperation();
-        RemoteOperationResult result = getCapabilities.execute(mStorageManager, mContext);
+        RemoteOperationResult result = new GetCapabilitiesOperation(mStorageManager).execute(mContext);
         if (result.isSuccess()) {
             String newDirectEditingEtag = mStorageManager.getCapability(mAccount.name).getDirectEditingEtag();
 
@@ -308,10 +315,11 @@ public class RefreshFolderOperation extends RemoteOperation {
     }
 
     private void updateDirectEditing(ArbitraryDataProvider arbitraryDataProvider, String newDirectEditingEtag) {
-        RemoteOperationResult result = new DirectEditingObtainRemoteOperation().execute(mAccount, mContext);
+        RemoteOperationResult<DirectEditing> result = new DirectEditingObtainRemoteOperation().execute(mAccount,
+                                                                                                       mContext);
 
         if (result.isSuccess()) {
-            DirectEditing directEditing = (DirectEditing) result.getSingleData();
+            DirectEditing directEditing = result.getResultData();
             String json = new Gson().toJson(directEditing);
             arbitraryDataProvider.storeOrUpdateKeyValue(mAccount.name, ArbitraryDataProvider.DIRECT_EDITING, json);
         } else {
@@ -328,15 +336,16 @@ public class RefreshFolderOperation extends RemoteOperation {
 
         try {
             client = OwnCloudClientFactory.createNextcloudClient(mAccount, mContext);
-        } catch (AccountUtils.AccountNotFoundException e) {
+        } catch (AccountUtils.AccountNotFoundException | NullPointerException e) {
             Log_OC.e(this, "Update of predefined status not possible!");
             return;
         }
 
-        RemoteOperationResult result = new GetPredefinedStatusesRemoteOperation().execute(client);
+        RemoteOperationResult<ArrayList<PredefinedStatus>> result =
+            new GetPredefinedStatusesRemoteOperation().execute(client);
 
         if (result.isSuccess()) {
-            ArrayList<PredefinedStatus> predefinedStatuses = (ArrayList<PredefinedStatus>) result.getSingleData();
+            ArrayList<PredefinedStatus> predefinedStatuses = result.getResultData();
             String json = new Gson().toJson(predefinedStatuses);
             arbitraryDataProvider.storeOrUpdateKeyValue(mAccount.name, ArbitraryDataProvider.PREDEFINED_STATUS, json);
         } else {
@@ -361,11 +370,9 @@ public class RefreshFolderOperation extends RemoteOperation {
                 // check if remote and local folder are different
                 String remoteFolderETag = remoteFolder.getEtag();
                 if (remoteFolderETag != null) {
-                    mRemoteFolderChanged =
-                            !(remoteFolderETag.equalsIgnoreCase(mLocalFolder.getEtag()));
+                    mRemoteFolderChanged = !(remoteFolderETag.equalsIgnoreCase(mLocalFolder.getEtag()));
                 } else {
-                    Log_OC.e(TAG, "Checked " + mAccount.name + remotePath + " : " +
-                            "No ETag received from server");
+                    Log_OC.e(TAG, "Checked " + mAccount.name + remotePath + ": No ETag received from server");
                 }
             }
 
@@ -456,6 +463,9 @@ public class RefreshFolderOperation extends RemoteOperation {
 
         // update richWorkspace
         mLocalFolder.setRichWorkspace(remoteFolder.getRichWorkspace());
+
+        // update eTag
+        mLocalFolder.setEtag(remoteFolder.getEtag());
 
         DecryptedFolderMetadata metadata = getDecryptedFolderMetadata(encryptedAncestor,
                                                                       mLocalFolder,
@@ -645,7 +655,7 @@ public class RefreshFolderOperation extends RemoteOperation {
     private void startContentSynchronizations(List<SynchronizeFileOperation> filesToSyncContents) {
         RemoteOperationResult contentsResult;
         for (SynchronizeFileOperation op : filesToSyncContents) {
-            contentsResult = op.execute(mStorageManager, mContext);   // async
+            contentsResult = op.execute(mContext);   // async
             if (!contentsResult.isSuccess()) {
                 if (contentsResult.getCode() == ResultCode.SYNC_CONFLICT) {
                     mConflictsFound++;

@@ -54,7 +54,7 @@ import com.owncloud.android.ui.activity.ManageAccountsActivity.PENDING_FOR_REMOV
 import com.owncloud.android.ui.activity.SyncedFoldersActivity
 import com.owncloud.android.ui.notifications.NotificationUtils
 import com.owncloud.android.utils.SyncedFolderUtils
-import com.owncloud.android.utils.ThemeUtils
+import com.owncloud.android.utils.theme.ThemeColorUtils
 import java.util.ArrayList
 import java.util.Random
 
@@ -193,7 +193,6 @@ class MediaFoldersDetectionWork constructor(
         intent.putExtra(NotificationWork.KEY_NOTIFICATION_ACCOUNT, user.accountName)
         intent.putExtra(KEY_MEDIA_FOLDER_PATH, path)
         intent.putExtra(KEY_MEDIA_FOLDER_TYPE, type)
-        intent.putExtra(SyncedFoldersActivity.EXTRA_SHOW_SIDEBAR, true)
         val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_ONE_SHOT)
         val notificationBuilder = NotificationCompat.Builder(
             context,
@@ -201,7 +200,7 @@ class MediaFoldersDetectionWork constructor(
         )
             .setSmallIcon(R.drawable.notification_icon)
             .setLargeIcon(BitmapFactory.decodeResource(context.resources, R.drawable.notification_icon))
-            .setColor(ThemeUtils.primaryColor(context))
+            .setColor(ThemeColorUtils.primaryColor(context))
             .setSubText(user.accountName)
             .setContentTitle(contentTitle)
             .setContentText(subtitle)

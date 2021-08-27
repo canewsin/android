@@ -20,15 +20,9 @@
 
 package com.owncloud.android.ui.fragment;
 
-import android.content.Context;
-import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
@@ -36,6 +30,8 @@ import com.google.gson.Gson;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.device.DeviceInfo;
 import com.owncloud.android.R;
+import com.owncloud.android.databinding.FileListActionsBottomSheetCreatorBinding;
+import com.owncloud.android.databinding.FileListActionsBottomSheetFragmentBinding;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.files.FileMenuFilter;
@@ -44,51 +40,20 @@ import com.owncloud.android.lib.common.DirectEditing;
 import com.owncloud.android.lib.resources.status.OCCapability;
 import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.utils.MimeTypeUtil;
-import com.owncloud.android.utils.ThemeUtils;
-
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
-import butterknife.Unbinder;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
+import com.owncloud.android.utils.theme.ThemeDrawableUtils;
+import com.owncloud.android.utils.theme.ThemeUtils;
 
 /**
  * FAB menu {@link android.app.Dialog} styled as a bottom sheet for main actions.
  */
 public class OCFileListBottomSheetDialog extends BottomSheetDialog {
-    @BindView(R.id.menu_icon_upload_files)
-    public ImageView iconUploadFiles;
-
-    @BindView(R.id.menu_icon_upload_from_app)
-    public ImageView iconUploadFromApp;
-    @BindView(R.id.menu_icon_direct_camera_upload)
-    public ImageView iconDirectCameraUpload;
-    @BindView(R.id.menu_icon_mkdir)
-    public ImageView iconMakeDir;
-
-    @BindView(R.id.add_to_cloud)
-    public TextView headline;
-
-    @BindView(R.id.templates)
-    public View templates;
-
-    @BindView(R.id.creators)
-    public LinearLayout creators;
-
-    @BindView(R.id.creators_container)
-    public LinearLayout creatorsContainer;
-
-    @BindView(R.id.menu_direct_camera_upload)
-    public View cameraView;
-
-    @BindView(R.id.menu_create_rich_workspace)
-    public View createRichWorkspace;
-
-    private Unbinder unbinder;
-    private OCFileListBottomSheetActions actions;
-    private FileActivity fileActivity;
-    private DeviceInfo deviceInfo;
-    private User user;
-    private OCFile file;
+    private FileListActionsBottomSheetFragmentBinding binding;
+    private final OCFileListBottomSheetActions actions;
+    private final FileActivity fileActivity;
+    private final DeviceInfo deviceInfo;
+    private final User user;
+    private final OCFile file;
 
     public OCFileListBottomSheetDialog(FileActivity fileActivity,
                                        OCFileListBottomSheetActions actions,
@@ -106,76 +71,73 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        final View view = getLayoutInflater().inflate(R.layout.file_list_actions_bottom_sheet_fragment, null);
-        setContentView(view);
+        binding = FileListActionsBottomSheetFragmentBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
         if (getWindow() != null) {
             getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
         }
 
-        unbinder = ButterKnife.bind(this, view);
+        int primaryColor = ThemeColorUtils.primaryColor(getContext(), true);
+        ThemeDrawableUtils.tintDrawable(binding.menuIconUploadFiles.getDrawable(), primaryColor);
+        ThemeDrawableUtils.tintDrawable(binding.menuIconUploadFromApp.getDrawable(), primaryColor);
+        ThemeDrawableUtils.tintDrawable(binding.menuIconDirectCameraUpload.getDrawable(), primaryColor);
+        ThemeDrawableUtils.tintDrawable(binding.menuIconMkdir.getDrawable(), primaryColor);
 
-        int primaryColor = ThemeUtils.primaryColor(getContext(), true);
-        ThemeUtils.tintDrawable(iconUploadFiles.getDrawable(), primaryColor);
-        ThemeUtils.tintDrawable(iconUploadFromApp.getDrawable(), primaryColor);
-        ThemeUtils.tintDrawable(iconDirectCameraUpload.getDrawable(), primaryColor);
-        ThemeUtils.tintDrawable(iconMakeDir.getDrawable(), primaryColor);
-
-        headline.setText(getContext().getResources().getString(R.string.add_to_cloud,
+        binding.addToCloud.setText(getContext().getResources().getString(R.string.add_to_cloud,
                 ThemeUtils.getDefaultDisplayNameForRootFolder(getContext())));
 
         OCCapability capability = fileActivity.getCapabilities();
-        if (capability.getRichDocuments().isTrue() &&
+        if (capability != null &&
+            capability.getRichDocuments().isTrue() &&
             capability.getRichDocumentsDirectEditing().isTrue() &&
-            android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
             capability.getRichDocumentsTemplatesAvailable().isTrue() &&
             !file.isEncrypted()) {
-            templates.setVisibility(View.VISIBLE);
+            binding.templates.setVisibility(View.VISIBLE);
         }
 
         String json = new ArbitraryDataProvider(getContext().getContentResolver())
             .getValue(user, ArbitraryDataProvider.DIRECT_EDITING);
 
         if (!json.isEmpty() &&
-            android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
             !file.isEncrypted()) {
             DirectEditing directEditing = new Gson().fromJson(json, DirectEditing.class);
 
             if (!directEditing.getCreators().isEmpty()) {
-                creatorsContainer.setVisibility(View.VISIBLE);
-
-                LayoutInflater vi = (LayoutInflater) getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                binding.creatorsContainer.setVisibility(View.VISIBLE);
 
                 for (Creator creator : directEditing.getCreators().values()) {
-                    View creatorView = vi.inflate(R.layout.file_list_actions_bottom_sheet_creator, null);
-                    ((TextView) creatorView.findViewById(R.id.creator_name)).setText(
+                    FileListActionsBottomSheetCreatorBinding creatorViewBinding =
+                        FileListActionsBottomSheetCreatorBinding.inflate(getLayoutInflater());
+
+                    View creatorView = creatorViewBinding.getRoot();
+
+                    creatorViewBinding.creatorName.setText(
                         String.format(fileActivity.getString(R.string.editor_placeholder),
                                       fileActivity.getString(R.string.create_new),
                                       creator.getName()));
-                    ImageView thumbnail = creatorView.findViewById(R.id.creator_thumbnail);
 
-                    thumbnail.setImageDrawable(MimeTypeUtil.getFileTypeIcon(creator.getMimetype(),
+                    creatorViewBinding.creatorThumbnail.setImageDrawable(MimeTypeUtil.getFileTypeIcon(creator.getMimetype(),
                                                                             creator.getExtension(),
                                                                             user,
                                                                             getContext()));
 
                     creatorView.setOnClickListener(v -> {
-                        actions.showTemplate(creator);
+                        actions.showTemplate(creator, creatorViewBinding.creatorName.getText().toString());
                         dismiss();
                     });
 
-                    creators.addView(creatorView);
+                    binding.creators.addView(creatorView);
                 }
             }
         }
 
         if (!deviceInfo.hasCamera(getContext())) {
-            cameraView.setVisibility(View.GONE);
+            binding.menuDirectCameraUpload.setVisibility(View.GONE);
         }
 
         // create rich workspace
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
-            FileMenuFilter.isEditorAvailable(getContext().getContentResolver(),
+        if (FileMenuFilter.isEditorAvailable(getContext().getContentResolver(),
                                              user,
                                              MimeTypeUtil.MIMETYPE_TEXT_MARKDOWN) &&
             file != null && !file.isEncrypted()) {
@@ -184,68 +146,67 @@ public class OCFileListBottomSheetDialog extends BottomSheetDialog {
             // == null: disabled on server side -> hide button
             // != "": info set -> hide button
             if (file.getRichWorkspace() == null || !"".equals(file.getRichWorkspace())) {
-                createRichWorkspace.setVisibility(View.GONE);
+                binding.menuCreateRichWorkspace.setVisibility(View.GONE);
             } else {
-                createRichWorkspace.setVisibility(View.VISIBLE);
+                binding.menuCreateRichWorkspace.setVisibility(View.VISIBLE);
             }
         } else {
-            createRichWorkspace.setVisibility(View.GONE);
+            binding.menuCreateRichWorkspace.setVisibility(View.GONE);
         }
 
-        createRichWorkspace.setOnClickListener(v -> {
+        setupClickListener();
+
+        setOnShowListener(d ->
+                              BottomSheetBehavior.from((View) binding.getRoot().getParent())
+                                  .setPeekHeight(binding.getRoot().getMeasuredHeight())
+                         );
+    }
+
+    private void setupClickListener() {
+        binding.menuCreateRichWorkspace.setOnClickListener(v -> {
             actions.createRichWorkspace();
             dismiss();
         });
 
-        setOnShowListener(d ->
-                BottomSheetBehavior.from((View) view.getParent()).setPeekHeight(view.getMeasuredHeight())
-        );
+        binding.menuMkdir.setOnClickListener(v -> {
+            actions.createFolder();
+            dismiss();
+        });
+
+        binding.menuUploadFromApp.setOnClickListener(v -> {
+            actions.uploadFromApp();
+            dismiss();
+        });
+
+        binding.menuDirectCameraUpload.setOnClickListener(v -> {
+            actions.directCameraUpload();
+            dismiss();
+        });
+
+        binding.menuUploadFiles.setOnClickListener(v -> {
+            actions.uploadFiles();
+            dismiss();
+        });
+
+        binding.menuNewDocument.setOnClickListener(v -> {
+            actions.newDocument();
+            dismiss();
+        });
+
+        binding.menuNewSpreadsheet.setOnClickListener(v -> {
+            actions.newSpreadsheet();
+            dismiss();
+        });
+
+        binding.menuNewPresentation.setOnClickListener(v -> {
+            actions.newPresentation();
+            dismiss();
+        });
     }
 
-    @OnClick(R.id.menu_mkdir)
-    public void createFolder() {
-        actions.createFolder();
-        dismiss();
-    }
-
-    @OnClick(R.id.menu_upload_from_app)
-    public void uploadFromApp() {
-        actions.uploadFromApp();
-        dismiss();
-    }
-
-    @OnClick(R.id.menu_direct_camera_upload)
-    public void directCameraUpload() {
-        actions.directCameraUpload();
-        dismiss();
-    }
-
-    @OnClick(R.id.menu_upload_files)
-    public void uploadFiles() {
-        actions.uploadFiles();
-        dismiss();
-    }
-
-    @OnClick(R.id.menu_new_document)
-    public void newDocument() {
-        actions.newDocument();
-        dismiss();
-    }
-
-    @OnClick(R.id.menu_new_spreadsheet)
-    public void newSpreadsheet() {
-        actions.newSpreadsheet();
-        dismiss();
-    }
-
-    @OnClick(R.id.menu_new_presentation)
-    public void newPresentation() {
-        actions.newPresentation();
-        dismiss();
-    }
     @Override
     protected void onStop() {
         super.onStop();
-        unbinder.unbind();
+        binding = null;
     }
 }

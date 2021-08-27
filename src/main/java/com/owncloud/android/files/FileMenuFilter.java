@@ -23,13 +23,11 @@ package com.owncloud.android.files;
 
 import android.content.ContentResolver;
 import android.content.Context;
-import android.os.Build;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.google.gson.Gson;
 import com.nextcloud.client.account.User;
-import com.nextcloud.client.device.DeviceInfo;
 import com.owncloud.android.R;
 import com.owncloud.android.datamodel.ArbitraryDataProvider;
 import com.owncloud.android.datamodel.OCFile;
@@ -65,7 +63,6 @@ public class FileMenuFilter {
     private ComponentsGetter componentsGetter;
     private Context context;
     private boolean overflowMenu;
-    private DeviceInfo deviceInfo;
     private User user;
 
     /**
@@ -76,7 +73,6 @@ public class FileMenuFilter {
      * @param componentsGetter  Accessor to app components, needed to access synchronization services
      * @param context           Android {@link Context}, needed to access build setup resources.
      * @param overflowMenu      true if the overflow menu items are being filtered
-     * @param deviceInfo        Device information provider
      * @param user              currently active user
      */
     public FileMenuFilter(int numberOfAllFiles,
@@ -84,7 +80,6 @@ public class FileMenuFilter {
                           ComponentsGetter componentsGetter,
                           Context context,
                           boolean overflowMenu,
-                          DeviceInfo deviceInfo,
                           User user
     ) {
         this.numberOfAllFiles = numberOfAllFiles;
@@ -92,7 +87,6 @@ public class FileMenuFilter {
         this.componentsGetter = componentsGetter;
         this.context = context;
         this.overflowMenu = overflowMenu;
-        this.deviceInfo = deviceInfo;
         this.user = user;
     }
 
@@ -109,10 +103,9 @@ public class FileMenuFilter {
                           ComponentsGetter componentsGetter,
                           Context context,
                           boolean overflowMenu,
-                          DeviceInfo deviceInfo,
                           User user
     ) {
-        this(1, Collections.singletonList(file), componentsGetter, context, overflowMenu, deviceInfo, user);
+        this(1, Collections.singletonList(file), componentsGetter, context, overflowMenu, user);
     }
 
     /**
@@ -283,7 +276,7 @@ public class FileMenuFilter {
                             List<Integer> toHide,
                             OCCapability capability
     ) {
-        if (deviceInfo.editorSupported() || files.iterator().next().isEncrypted()) {
+        if (files.iterator().next().isEncrypted()) {
             toHide.add(R.id.action_edit);
             return;
         }
@@ -333,7 +326,7 @@ public class FileMenuFilter {
      */
     @NextcloudServer(max = 18)
     private boolean isRichDocumentEditingSupported(OCCapability capability, String mimeType) {
-        return isSingleFile() && android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP &&
+        return isSingleFile() &&
             (capability.getRichDocumentsMimeTypeList().contains(mimeType) ||
                 capability.getRichDocumentsOptionalMimeTypeList().contains(mimeType)) &&
             capability.getRichDocumentsDirectEditing().isTrue();

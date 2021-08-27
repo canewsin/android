@@ -28,6 +28,7 @@ import android.os.Bundle;
 
 import com.nextcloud.client.account.UserAccountManager;
 import com.nextcloud.client.account.UserAccountManagerImpl;
+import com.owncloud.android.AbstractIT;
 import com.owncloud.android.R;
 import com.owncloud.android.authentication.AuthenticatorActivity;
 
@@ -46,6 +47,7 @@ import androidx.test.rule.GrantPermissionRule;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.action.ViewActions.typeTextIntoFocusedView;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.web.sugar.Web.onWebView;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
@@ -54,7 +56,7 @@ import static org.junit.Assert.assertEquals;
 
 
 @LargeTest
-public class LoginIT {
+public class LoginIT extends AbstractIT {
     @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
@@ -85,7 +87,7 @@ public class LoginIT {
 
         onView(withId(R.id.login)).perform(click());
         onView(withId(R.id.host_url_input)).perform(typeText(baseUrl));
-        onView(withId(R.id.test_server_button)).perform(click());
+        onView(withId(R.id.host_url_input)).perform(typeTextIntoFocusedView("\n"));
 
         Thread.sleep(3000);
 

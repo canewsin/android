@@ -117,13 +117,13 @@
                 android:maxLines="1"
                 android:text="@string/placeholder_sentence"
                 android:textColor="?android:attr/textColorSecondary"
-                tools:text="https://server.com/nextcloud" />
+                tools:text="https://nextcloud.localhost/nextcloud" />
 
         </LinearLayout>
 
         <ImageView
             android:id="@+id/account_menu"
-            android:layout_width="wrap_content"
+            android:layout_width="@dimen/minimum_size_for_touchable_area"
             android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"

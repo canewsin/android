@@ -112,11 +112,13 @@ public class FileDataStorageManager {
         return getFileByPath(ProviderTableMeta.FILE_PATH, path);
     }
 
-    public OCFile getFileByDecryptedRemotePath(String path) {
+    public @Nullable
+    OCFile getFileByDecryptedRemotePath(String path) {
         return getFileByPath(ProviderTableMeta.FILE_PATH_DECRYPTED, path);
     }
 
-    private OCFile getFileByPath(String type, String path) {
+    private @Nullable
+    OCFile getFileByPath(String type, String path) {
         Cursor cursor = getFileCursorForValue(type, path);
         OCFile ocFile = null;
         if (cursor.moveToFirst()) {
@@ -1371,7 +1373,7 @@ public class FileDataStorageManager {
     }
 
     // TODO shares null?
-    public void saveShares(Collection<OCShare> shares) {
+    public void saveShares(List<OCShare> shares) {
         cleanShares();
         ArrayList<ContentProviderOperation> operations = new ArrayList<>(shares.size());
 
@@ -1716,10 +1718,10 @@ public class FileDataStorageManager {
     }
 
     public static void triggerMediaScan(String path, OCFile file) {
-        if (path != null) {
+        if (path != null && !TextUtils.isEmpty(path)) {
             ContentValues values = new ContentValues();
             ContentResolver contentResolver = MainApp.getAppContext().getContentResolver();
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && !TextUtils.isEmpty(path)) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ) {
                 if (file != null) {
                     values.put(MediaStore.Images.Media.MIME_TYPE, file.getMimeType());
                     values.put(MediaStore.Images.Media.TITLE, file.getFileName());
@@ -2039,6 +2041,8 @@ public class FileDataStorageManager {
                           capability.getServerBackground());
         contentValues.put(ProviderTableMeta.CAPABILITIES_SERVER_SLOGAN,
                           capability.getServerSlogan());
+        contentValues.put(ProviderTableMeta.CAPABILITIES_SERVER_LOGO,
+                          capability.getServerLogo());
         contentValues.put(ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION,
                           capability.getEndToEndEncryption().getValue());
         contentValues.put(ProviderTableMeta.CAPABILITIES_SERVER_BACKGROUND_DEFAULT,
@@ -2124,6 +2128,15 @@ public class FileDataStorageManager {
         return capability;
     }
 
+    public boolean capabilityExistsForAccount(String accountName) {
+        Cursor cursor = getCapabilityCursorForAccount(accountName);
+
+        boolean exists = cursor.moveToFirst();
+        cursor.close();
+
+        return exists;
+    }
+
     private OCCapability createCapabilityInstance(Cursor cursor) {
         OCCapability capability = null;
         if (cursor != null) {
@@ -2174,6 +2187,7 @@ public class FileDataStorageManager {
             capability.setServerElementColor(getString(cursor, ProviderTableMeta.CAPABILITIES_SERVER_ELEMENT_COLOR));
             capability.setServerBackground(getString(cursor, ProviderTableMeta.CAPABILITIES_SERVER_BACKGROUND_URL));
             capability.setServerSlogan(getString(cursor, ProviderTableMeta.CAPABILITIES_SERVER_SLOGAN));
+            capability.setServerLogo(getString(cursor, ProviderTableMeta.CAPABILITIES_SERVER_LOGO));
             capability.setEndToEndEncryption(getBoolean(cursor, ProviderTableMeta.CAPABILITIES_END_TO_END_ENCRYPTION));
             capability.setServerBackgroundDefault(
                 getBoolean(cursor, ProviderTableMeta.CAPABILITIES_SERVER_BACKGROUND_DEFAULT));

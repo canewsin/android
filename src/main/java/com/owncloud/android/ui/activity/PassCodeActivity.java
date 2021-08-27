@@ -6,6 +6,7 @@
  *   @author David A. Velasco
  *   Copyright (C) 2011 Bartek Przybylski
  *   Copyright (C) 2015 ownCloud Inc.
+ *   Copyright (C) 2020 Kwon Yuna <yunaghgh@naver.com>
  *
  *   This program is free software: you can redistribute it and/or modify
  *   it under the terms of the GNU General Public License version 2,
@@ -33,33 +34,36 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.google.android.material.snackbar.Snackbar;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.nextcloud.client.preferences.AppPreferencesImpl;
 import com.owncloud.android.R;
+import com.owncloud.android.databinding.PasscodelockBinding;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeButtonUtils;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
+import com.owncloud.android.utils.theme.ThemeTextInputUtils;
 
 import java.util.Arrays;
 
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PassCodeActivity extends AppCompatActivity implements Injectable {
 
     private static final String TAG = PassCodeActivity.class.getSimpleName();
+    private static final String KEY_PASSCODE_DIGITS = "PASSCODE_DIGITS";
+    private static final String KEY_CONFIRMING_PASSCODE = "CONFIRMING_PASSCODE";
 
     public final static String ACTION_REQUEST_WITH_RESULT = "ACTION_REQUEST_WITH_RESULT";
     public final static String ACTION_CHECK_WITH_RESULT = "ACTION_CHECK_WITH_RESULT";
     public final static String ACTION_CHECK = "ACTION_CHECK";
-
     public final static String KEY_PASSCODE  = "KEY_PASSCODE";
     public final static String KEY_CHECK_RESULT = "KEY_CHECK_RESULT";
 
@@ -70,18 +74,11 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
     public final static String PREFERENCE_PASSCODE_D4 = "PrefPinCode4";
 
     @Inject AppPreferences preferences;
-    private Button mBCancel;
-    private TextView mPassCodeHdr;
-    private TextView mPassCodeHdrExplanation;
-    private EditText[] mPassCodeEditTexts = new EditText[4];
-
-    private String [] mPassCodeDigits = {"","","",""};
-    private static final String KEY_PASSCODE_DIGITS = "PASSCODE_DIGITS";
-    private boolean mConfirmingPassCode;
-    private static final String KEY_CONFIRMING_PASSCODE = "CONFIRMING_PASSCODE";
-
-    private boolean mBChange = true; // to control that only one blocks jump
-
+    private PasscodelockBinding binding;
+    private final EditText[] passCodeEditTexts = new EditText[4];
+    private String [] passCodeDigits = {"","","",""};
+    private boolean confirmingPassCode;
+    private boolean changed = true; // to control that only one blocks jump
 
     /**
      * Initializes the activity.
@@ -93,32 +90,29 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
      */
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.passcodelock);
+        binding = PasscodelockBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        int elementColor = ThemeUtils.primaryColor(this);
+        int elementColor = ThemeColorUtils.primaryColor(this, true);
 
-        mBCancel = findViewById(R.id.cancel);
-        ThemeUtils.colorPrimaryButton(mBCancel, this);
+        ThemeButtonUtils.themeBorderlessButton(ThemeColorUtils.primaryColor(this, true), binding.cancel);
 
-        mPassCodeHdr = findViewById(R.id.header);
-        mPassCodeHdrExplanation = findViewById(R.id.explanation);
+        passCodeEditTexts[0] = binding.txt0;
+        ThemeTextInputUtils.colorEditText(passCodeEditTexts[0], elementColor);
+        ThemeTextInputUtils.themeEditText(this, passCodeEditTexts[0], false);
+        passCodeEditTexts[0].requestFocus();
 
-        mPassCodeEditTexts[0] = findViewById(R.id.txt0);
-        ThemeUtils.colorEditText(mPassCodeEditTexts[0], elementColor);
-        ThemeUtils.themeEditText(this, mPassCodeEditTexts[0], false);
-        mPassCodeEditTexts[0].requestFocus();
+        passCodeEditTexts[1] = binding.txt1;
+        ThemeTextInputUtils.colorEditText(passCodeEditTexts[1], elementColor);
+        ThemeTextInputUtils.themeEditText(this, passCodeEditTexts[1], false);
 
-        mPassCodeEditTexts[1] = findViewById(R.id.txt1);
-        ThemeUtils.colorEditText(mPassCodeEditTexts[1], elementColor);
-        ThemeUtils.themeEditText(this, mPassCodeEditTexts[1], false);
+        passCodeEditTexts[2] = binding.txt2;
+        ThemeTextInputUtils.colorEditText(passCodeEditTexts[2], elementColor);
+        ThemeTextInputUtils.themeEditText(this, passCodeEditTexts[2], false);
 
-        mPassCodeEditTexts[2] = findViewById(R.id.txt2);
-        ThemeUtils.colorEditText(mPassCodeEditTexts[2], elementColor);
-        ThemeUtils.themeEditText(this, mPassCodeEditTexts[2], false);
-
-        mPassCodeEditTexts[3] = findViewById(R.id.txt3);
-        ThemeUtils.colorEditText(mPassCodeEditTexts[3], elementColor);
-        ThemeUtils.themeEditText(this, mPassCodeEditTexts[3], false);
+        passCodeEditTexts[3] = binding.txt3;
+        ThemeTextInputUtils.colorEditText(passCodeEditTexts[3], elementColor);
+        ThemeTextInputUtils.themeEditText(this, passCodeEditTexts[3], false);
 
         Window window = getWindow();
         if (window != null) {
@@ -127,32 +121,34 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
 
         if (ACTION_CHECK.equals(getIntent().getAction())) {
             /// this is a pass code request; the user has to input the right value
-            mPassCodeHdr.setText(R.string.pass_code_enter_pass_code);
-            mPassCodeHdrExplanation.setVisibility(View.INVISIBLE);
+            binding.header.setText(R.string.pass_code_enter_pass_code);
+            binding.explanation.setVisibility(View.INVISIBLE);
             setCancelButtonEnabled(false);      // no option to cancel
+
+            showDelay();
 
         } else if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction())) {
             if (savedInstanceState != null) {
-                mConfirmingPassCode = savedInstanceState.getBoolean(PassCodeActivity.KEY_CONFIRMING_PASSCODE);
-                mPassCodeDigits = savedInstanceState.getStringArray(PassCodeActivity.KEY_PASSCODE_DIGITS);
+                confirmingPassCode = savedInstanceState.getBoolean(PassCodeActivity.KEY_CONFIRMING_PASSCODE);
+                passCodeDigits = savedInstanceState.getStringArray(PassCodeActivity.KEY_PASSCODE_DIGITS);
             }
-            if(mConfirmingPassCode){
+            if(confirmingPassCode){
                 // the app was in the passcodeconfirmation
                 requestPassCodeConfirmation();
             }else{
                 // pass code preference has just been activated in SettingsActivity;
                 // will receive and confirm pass code value
-                mPassCodeHdr.setText(R.string.pass_code_configure_your_pass_code);
+                binding.header.setText(R.string.pass_code_configure_your_pass_code);
 
-                mPassCodeHdrExplanation.setVisibility(View.VISIBLE);
+                binding.explanation.setVisibility(View.VISIBLE);
                 setCancelButtonEnabled(true);
             }
 
         } else if (ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
             // pass code preference has just been disabled in SettingsActivity;
             // will confirm user knows pass code, then remove it
-            mPassCodeHdr.setText(R.string.pass_code_remove_your_pass_code);
-            mPassCodeHdrExplanation.setVisibility(View.INVISIBLE);
+            binding.header.setText(R.string.pass_code_remove_your_pass_code);
+            binding.explanation.setVisibility(View.INVISIBLE);
             setCancelButtonEnabled(true);
 
         } else {
@@ -170,62 +166,65 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
      */
     protected void setCancelButtonEnabled(boolean enabled){
         if(enabled){
-            mBCancel.setVisibility(View.VISIBLE);
-            mBCancel.setOnClickListener(new OnClickListener() {
+            binding.cancel.setVisibility(View.VISIBLE);
+            binding.cancel.setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     finish();
                 }
             });
         } else {
-            mBCancel.setVisibility(View.GONE);
-            mBCancel.setVisibility(View.INVISIBLE);
-            mBCancel.setOnClickListener(null);
+            binding.cancel.setVisibility(View.INVISIBLE);
+            binding.cancel.setOnClickListener(null);
         }
     }
 
+    @VisibleForTesting
+    public PasscodelockBinding getBinding() {
+        return binding;
+    }
 
     /**
      * Binds the appropriate listeners to the input boxes receiving each digit of the pass code.
      */
     protected void setTextListeners() {
-        mPassCodeEditTexts[0].addTextChangedListener(new PassCodeDigitTextWatcher(0, false));
-        mPassCodeEditTexts[1].addTextChangedListener(new PassCodeDigitTextWatcher(1, false));
-        mPassCodeEditTexts[2].addTextChangedListener(new PassCodeDigitTextWatcher(2, false));
-        mPassCodeEditTexts[3].addTextChangedListener(new PassCodeDigitTextWatcher(3, true));
+        passCodeEditTexts[0].addTextChangedListener(new PassCodeDigitTextWatcher(0, false));
+        passCodeEditTexts[1].addTextChangedListener(new PassCodeDigitTextWatcher(1, false));
+        passCodeEditTexts[2].addTextChangedListener(new PassCodeDigitTextWatcher(2, false));
+        passCodeEditTexts[3].addTextChangedListener(new PassCodeDigitTextWatcher(3, true));
 
         setOnKeyListener(1);
         setOnKeyListener(2);
         setOnKeyListener(3);
 
-        mPassCodeEditTexts[1].setOnFocusChangeListener((v, hasFocus) -> onPassCodeEditTextFocusChange(1));
+        passCodeEditTexts[1].setOnFocusChangeListener((v, hasFocus) -> onPassCodeEditTextFocusChange(1));
 
-        mPassCodeEditTexts[2].setOnFocusChangeListener((v, hasFocus) -> onPassCodeEditTextFocusChange(2));
+        passCodeEditTexts[2].setOnFocusChangeListener((v, hasFocus) -> onPassCodeEditTextFocusChange(2));
 
-        mPassCodeEditTexts[3].setOnFocusChangeListener((v, hasFocus) -> onPassCodeEditTextFocusChange(3));
+        passCodeEditTexts[3].setOnFocusChangeListener((v, hasFocus) -> onPassCodeEditTextFocusChange(3));
     }
 
     private void onPassCodeEditTextFocusChange(final int passCodeIndex) {
         for (int i = 0; i < passCodeIndex; i++) {
-            if (TextUtils.isEmpty(mPassCodeEditTexts[i].getText())) {
-                mPassCodeEditTexts[i].requestFocus();
+            if (TextUtils.isEmpty(passCodeEditTexts[i].getText())) {
+                passCodeEditTexts[i].requestFocus();
                 break;
             }
         }
     }
 
     private void setOnKeyListener(final int passCodeIndex) {
-        mPassCodeEditTexts[passCodeIndex].setOnKeyListener((v, keyCode, event) -> {
-            if (keyCode == KeyEvent.KEYCODE_DEL && mBChange) {
-                mPassCodeEditTexts[passCodeIndex - 1].requestFocus();
-                if (!mConfirmingPassCode) {
-                    mPassCodeDigits[passCodeIndex - 1] = "";
+        passCodeEditTexts[passCodeIndex].setOnKeyListener((v, keyCode, event) -> {
+            if (keyCode == KeyEvent.KEYCODE_DEL && changed) {
+                passCodeEditTexts[passCodeIndex - 1].requestFocus();
+                if (!confirmingPassCode) {
+                    passCodeDigits[passCodeIndex - 1] = "";
                 }
-                mPassCodeEditTexts[passCodeIndex - 1].setText("");
-                mBChange = false;
+                passCodeEditTexts[passCodeIndex - 1].setText("");
+                changed = false;
 
-            } else if (!mBChange) {
-                mBChange = true;
+            } else if (!changed) {
+                changed = true;
             }
             return false;
         });
@@ -240,18 +239,22 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
     private void processFullPassCode() {
         if (ACTION_CHECK.equals(getIntent().getAction())) {
             if (checkPassCode()) {
+                preferences.resetPinWrongAttempts();
+
                 /// pass code accepted in request, user is allowed to access the app
                 AppPreferencesImpl.fromContext(this).setLockTimestamp(SystemClock.elapsedRealtime());
                 hideSoftKeyboard();
                 finish();
 
             }  else {
+                preferences.increasePinWrongAttempts();
+
                 showErrorAndRestart(R.string.pass_code_wrong, R.string.pass_code_enter_pass_code, View.INVISIBLE);
             }
 
         } else if (ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
             if (checkPassCode()) {
-                AppPreferencesImpl.fromContext(this).setLockTimestamp(SystemClock.elapsedRealtime());
+                preferences.setLockTimestamp(SystemClock.elapsedRealtime());
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra(KEY_CHECK_RESULT, true);
                 setResult(RESULT_OK, resultIntent);
@@ -263,7 +266,7 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
 
         } else if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction())) {
             /// enabling pass code
-            if (!mConfirmingPassCode) {
+            if (!confirmingPassCode) {
                 requestPassCodeConfirmation();
 
             } else if (confirmPassCode()) {
@@ -292,11 +295,13 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
 
     private void showErrorAndRestart(int errorMessage, int headerMessage,
                                      int explanationVisibility) {
-        Arrays.fill(mPassCodeDigits, null);
+        Arrays.fill(passCodeDigits, null);
         Snackbar.make(findViewById(android.R.id.content), getString(errorMessage), Snackbar.LENGTH_LONG).show();
-        mPassCodeHdr.setText(headerMessage);                          // TODO check if really needed
-        mPassCodeHdrExplanation.setVisibility(explanationVisibility); // TODO check if really needed
+        binding.header.setText(headerMessage);                          // TODO check if really needed
+        binding.explanation.setVisibility(explanationVisibility); // TODO check if really needed
         clearBoxes();
+
+        showDelay();
     }
 
 
@@ -306,9 +311,9 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
      */
     protected void requestPassCodeConfirmation(){
         clearBoxes();
-        mPassCodeHdr.setText(R.string.pass_code_reenter_your_pass_code);
-        mPassCodeHdrExplanation.setVisibility(View.INVISIBLE);
-        mConfirmingPassCode = true;
+        binding.header.setText(R.string.pass_code_reenter_your_pass_code);
+        binding.explanation.setVisibility(View.INVISIBLE);
+        confirmingPassCode = true;
     }
 
     /**
@@ -319,11 +324,11 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
     protected boolean checkPassCode() {
 
 
-        String savedPassCodeDigits[] = preferences.getPassCode();
+        String[] savedPassCodeDigits = preferences.getPassCode();
 
         boolean result = true;
-        for (int i = 0; i < mPassCodeDigits.length && result; i++) {
-            result = mPassCodeDigits[i] != null && mPassCodeDigits[i].equals(savedPassCodeDigits[i]);
+        for (int i = 0; i < passCodeDigits.length && result; i++) {
+            result = passCodeDigits[i] != null && passCodeDigits[i].equals(savedPassCodeDigits[i]);
         }
         return result;
     }
@@ -335,11 +340,11 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
      * @return     'True' if retyped pass code equals to the entered before.
      */
     protected boolean confirmPassCode(){
-        mConfirmingPassCode = false;
+        confirmingPassCode = false;
 
         boolean result = true;
-        for (int i = 0; i < mPassCodeEditTexts.length && result; i++) {
-            result = mPassCodeEditTexts[i].getText().toString().equals(mPassCodeDigits[i]);
+        for (int i = 0; i < passCodeEditTexts.length && result; i++) {
+            result = passCodeEditTexts[i].getText().toString().equals(passCodeDigits[i]);
         }
         return result;
     }
@@ -348,10 +353,10 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
      * Sets the input fields to empty strings and puts the focus on the first one.
      */
     protected void clearBoxes(){
-        for (EditText mPassCodeEditText : mPassCodeEditTexts) {
+        for (EditText mPassCodeEditText : passCodeEditTexts) {
             mPassCodeEditText.setText("");
         }
-        mPassCodeEditTexts[0].requestFocus();
+        passCodeEditTexts[0].requestFocus();
     }
 
     /**
@@ -363,12 +368,15 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
      * @return              'True' when the key event was processed by this method.
      */
     @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event){
-        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount()== 0){
-            if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction()) ||
-                    ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0) {
+            if (ACTION_CHECK.equals(getIntent().getAction())) {
+                moveTaskToBack(true);
+                finishAndRemoveTask();
+            } else if (ACTION_REQUEST_WITH_RESULT.equals(getIntent().getAction()) ||
+                ACTION_CHECK_WITH_RESULT.equals(getIntent().getAction())) {
                 finish();
-            }   // else, do nothing, but report that the key was consumed to stay alive
+            }// else, do nothing, but report that the key was consumed to stay alive
             return true;
         }
         return super.onKeyDown(keyCode, event);
@@ -380,19 +388,51 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
     protected void savePassCodeAndExit() {
         Intent resultIntent = new Intent();
         resultIntent.putExtra(KEY_PASSCODE,
-                mPassCodeDigits[0] + mPassCodeDigits[1] + mPassCodeDigits[2] + mPassCodeDigits[3]);
+                              passCodeDigits[0] + passCodeDigits[1] + passCodeDigits[2] + passCodeDigits[3]);
 
         setResult(RESULT_OK, resultIntent);
 
         finish();
     }
 
+    private void showDelay() {
+        int delay = preferences.pinBruteForceDelay();
+
+        if (delay > 0) {
+            binding.explanation.setText(R.string.brute_force_delay);
+            binding.explanation.setVisibility(View.VISIBLE);
+            binding.txt0.setEnabled(false);
+            binding.txt1.setEnabled(false);
+            binding.txt2.setEnabled(false);
+            binding.txt3.setEnabled(false);
+
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(delay * 1000);
+
+                        runOnUiThread(() -> {
+                            binding.explanation.setVisibility(View.INVISIBLE);
+                            binding.txt0.setEnabled(true);
+                            binding.txt1.setEnabled(true);
+                            binding.txt2.setEnabled(true);
+                            binding.txt3.setEnabled(true);
+                        });
+                    } catch (InterruptedException e) {
+                        Log_OC.e(this, "Could not delay password input prompt");
+                    }
+                }
+            }).start();
+        }
+    }
+
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(PassCodeActivity.KEY_CONFIRMING_PASSCODE, mConfirmingPassCode);
-        outState.putStringArray(PassCodeActivity.KEY_PASSCODE_DIGITS, mPassCodeDigits);
+        outState.putBoolean(PassCodeActivity.KEY_CONFIRMING_PASSCODE, confirmingPassCode);
+        outState.putStringArray(PassCodeActivity.KEY_PASSCODE_DIGITS, passCodeDigits);
     }
 
     private class PassCodeDigitTextWatcher implements TextWatcher {
@@ -435,10 +475,10 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
         @Override
         public void afterTextChanged(Editable s) {
             if (s.length() > 0) {
-                if (!mConfirmingPassCode) {
-                    mPassCodeDigits[mIndex] = mPassCodeEditTexts[mIndex].getText().toString();
+                if (!confirmingPassCode) {
+                    passCodeDigits[mIndex] = passCodeEditTexts[mIndex].getText().toString();
                 }
-                mPassCodeEditTexts[next()].requestFocus();
+                passCodeEditTexts[next()].requestFocus();
 
                 if (mLastOne) {
                     processFullPassCode();
@@ -458,7 +498,5 @@ public class PassCodeActivity extends AppCompatActivity implements Injectable {
         public void onTextChanged(CharSequence s, int start, int before, int count) {
             // nothing to do
         }
-
     }
-
 }

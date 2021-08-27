@@ -35,7 +35,7 @@ public interface AppPreferences {
     /**
      * Preferences listener. Callbacks should be invoked on main thread.
      *
-     * Miantainers should extend this interface with callbacks for specific
+     * Maintainers should extend this interface with callbacks for specific
      * events.
      */
     interface Listener {
@@ -329,9 +329,14 @@ public interface AppPreferences {
 
     void setStoragePath(String path);
 
+    void setStoragePathValid();
+
+    boolean isStoragePathValid();
+
     void removeKeysMigrationPreference();
 
     String getCurrentAccountName();
+
     void setCurrentAccountName(String accountName);
 
     /**
@@ -350,4 +355,10 @@ public interface AppPreferences {
     boolean isPowerCheckDisabled();
 
     void setPowerCheckDisabled(boolean value);
+
+    void increasePinWrongAttempts();
+
+    void resetPinWrongAttempts();
+
+    int pinBruteForceDelay();
 }

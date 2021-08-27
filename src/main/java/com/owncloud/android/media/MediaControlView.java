@@ -40,7 +40,8 @@ import android.widget.TextView;
 
 import com.owncloud.android.R;
 import com.owncloud.android.lib.common.utils.Log_OC;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeBarUtils;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
 
 import java.util.Formatter;
 import java.util.Locale;
@@ -103,7 +104,6 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         handler.removeMessages(SHOW_PROGRESS);
     }
 
-
     private void initControllerView(View v) {
         pauseButton = v.findViewById(R.id.playBtn);
         if (pauseButton != null) {
@@ -125,10 +125,10 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         if (progressBar != null) {
             if (progressBar instanceof SeekBar) {
                 SeekBar seeker = (SeekBar) progressBar;
-                ThemeUtils.colorHorizontalSeekBar(seeker, getContext());
+                ThemeBarUtils.colorHorizontalSeekBar(seeker, getContext());
                 seeker.setOnSeekBarChangeListener(this);
             } else {
-                ThemeUtils.colorHorizontalProgressBar(progressBar, ThemeUtils.primaryAccentColor(getContext()));
+                ThemeBarUtils.colorHorizontalProgressBar(progressBar, ThemeColorUtils.primaryAccentColor(getContext()));
             }
             progressBar.setMax(1000);
         }
@@ -160,7 +160,6 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
             Log_OC.i(TAG, "Old media interface detected");
         }
     }
-
 
     private Handler handler = new Handler() {
         @Override
@@ -216,7 +215,6 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         }
         return position;
     }
-
 
     @Override
     public boolean dispatchKeyEvent(KeyEvent event) {
@@ -276,7 +274,6 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         } else {
             rewindButton.setVisibility(View.INVISIBLE);
         }
-
     }
 
     private void doPauseResume() {
@@ -310,37 +307,28 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
     public void onClick(View v) {
         int pos;
         boolean playing = playerControl.isPlaying();
-        switch (v.getId()) {
-            case R.id.playBtn:
-                doPauseResume();
-                break;
+        int id = v.getId();
 
-            case R.id.rewindBtn:
-                pos = playerControl.getCurrentPosition();
-                pos -= 5000;
-                playerControl.seekTo(pos);
-                if (!playing) {
-                    playerControl.pause();  // necessary in some 2.3.x devices
-                }
-                setProgress();
-                break;
-
-            case R.id.forwardBtn:
-                pos = playerControl.getCurrentPosition();
-                pos += 15000;
-                playerControl.seekTo(pos);
-                if (!playing) {
-                    playerControl.pause(); // necessary in some 2.3.x devices
-                }
-                setProgress();
-                break;
-
-            default:
-                // do nothing
-                break;
+        if (id == R.id.playBtn) {
+            doPauseResume();
+        } else if (id == R.id.rewindBtn) {
+            pos = playerControl.getCurrentPosition();
+            pos -= 5000;
+            playerControl.seekTo(pos);
+            if (!playing) {
+                playerControl.pause();  // necessary in some 2.3.x devices
+            }
+            setProgress();
+        } else if (id == R.id.forwardBtn) {
+            pos = playerControl.getCurrentPosition();
+            pos += 15000;
+            playerControl.seekTo(pos);
+            if (!playing) {
+                playerControl.pause(); // necessary in some 2.3.x devices
+            }
+            setProgress();
         }
     }
-
 
     @Override
     public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
@@ -368,7 +356,6 @@ public class MediaControlView extends FrameLayout implements OnClickListener, On
         isDragging = true;                           // monitors the duration of dragging
         handler.removeMessages(SHOW_PROGRESS);     // grants no more updates with media player progress while dragging
     }
-
 
     /**
      * Called in devices with touchpad when the user finishes the adjusting of the seekbar.

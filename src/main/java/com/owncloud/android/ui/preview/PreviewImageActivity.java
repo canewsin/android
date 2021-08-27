@@ -58,7 +58,7 @@ import com.owncloud.android.ui.activity.FileActivity;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.ui.fragment.FileFragment;
 import com.owncloud.android.utils.MimeTypeUtil;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeToolbarUtils;
 
 import javax.inject.Inject;
 
@@ -71,7 +71,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 
 /**
- *  Holds a swiping galley where image files contained in an ownCloud directory are shown
+ *  Holds a swiping galley where image files contained in an Nextcloud directory are shown
  */
 @SuppressWarnings("PMD.AvoidDuplicateLiterals")
 public class PreviewImageActivity extends FileActivity implements
@@ -121,7 +121,7 @@ public class PreviewImageActivity extends FileActivity implements
         // ActionBar
         updateActionBarTitleAndHomeButton(null);
 
-        ThemeUtils.tintBackButton(actionBar, this, Color.WHITE);
+        ThemeToolbarUtils.tintBackButton(actionBar, this, Color.WHITE);
 
         mFullScreenAnchorView = getWindow().getDecorView();
         // to keep our UI controls visibility in line with system bars visibility

@@ -39,13 +39,14 @@ import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import static com.owncloud.android.ui.fragment.OCFileListFragment.FOLDER_LAYOUT_LIST;
 
 /**
  * Implementation of application-wide preferences using {@link SharedPreferences}.
  *
- * Users should not use this class directly. Please use {@link AppPreferences} interafce
+ * Users should not use this class directly. Please use {@link AppPreferences} interface
  * instead.
  */
 public final class AppPreferencesImpl implements AppPreferences {
@@ -56,6 +57,7 @@ public final class AppPreferencesImpl implements AppPreferences {
      */
     public static final String AUTO_PREF__LAST_SEEN_VERSION_CODE = "lastSeenVersionCode";
     public static final String STORAGE_PATH = "storage_path";
+    public static final String STORAGE_PATH_VALID = "storage_path_valid";
     public static final String PREF__DARK_THEME = "dark_theme_mode";
     public static final float DEFAULT_GRID_COLUMN = 3f;
 
@@ -87,6 +89,7 @@ public final class AppPreferencesImpl implements AppPreferences {
     private static final String PREF__MIGRATED_USER_ID = "migrated_user_id";
     private static final String PREF__PHOTO_SEARCH_TIMESTAMP = "photo_search_timestamp";
     private static final String PREF__POWER_CHECK_DISABLED = "power_check_disabled";
+    private static final String PREF__PIN_BRUTE_FORCE_COUNT = "pin_brute_force_count";
 
     private final Context context;
     private final SharedPreferences preferences;
@@ -526,6 +529,17 @@ public final class AppPreferencesImpl implements AppPreferences {
         preferences.edit().putString(STORAGE_PATH, path).commit();  // commit synchronously
     }
 
+    @SuppressLint("ApplySharedPref")
+    @Override
+    public void setStoragePathValid() {
+        preferences.edit().putBoolean(STORAGE_PATH_VALID, true).commit();
+    }
+
+    @Override
+    public boolean isStoragePathValid() {
+        return preferences.getBoolean(STORAGE_PATH_VALID, false);
+    }
+
     /**
      * Removes keys migration key from shared preferences.
      */
@@ -628,5 +642,26 @@ public final class AppPreferencesImpl implements AppPreferences {
     @Override
     public void setPowerCheckDisabled(boolean value) {
         preferences.edit().putBoolean(PREF__POWER_CHECK_DISABLED, value).apply();
+    }
+
+    public void increasePinWrongAttempts() {
+        int count = preferences.getInt(PREF__PIN_BRUTE_FORCE_COUNT, 0);
+        preferences.edit().putInt(PREF__PIN_BRUTE_FORCE_COUNT, count + 1).apply();
+    }
+
+    @Override
+    public void resetPinWrongAttempts() {
+        preferences.edit().putInt(PREF__PIN_BRUTE_FORCE_COUNT, 0).apply();
+    }
+
+    public int pinBruteForceDelay() {
+        int count = preferences.getInt(PREF__PIN_BRUTE_FORCE_COUNT, 0);
+
+        return computeBruteForceDelay(count);
+    }
+
+    @VisibleForTesting
+    public int computeBruteForceDelay(int count) {
+        return (int) Math.min(count / 3d, 10);
     }
 }

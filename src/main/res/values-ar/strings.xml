@@ -9,8 +9,7 @@
     <string name="account_not_found">الحساب غير موجود </string>
     <string name="action_clear_failed_uploads">مسح الملفات التي فشل رفعها</string>
     <string name="action_edit">تعديل</string>
-    <string name="action_empty_notifications">أزل جميع التنبيهات</string>
-    <string name="action_empty_trashbin">تفريغ سلة المهملات</string>
+    <string name="action_empty_notifications">إزالة جميع التنبيهات</string>
     <string name="action_send_share">إرسال/مشاركة</string>
     <string name="action_switch_grid_view">عرض شبكي</string>
     <string name="action_switch_list_view">عرض على شكل قائمة</string>
@@ -34,6 +33,8 @@
     <string name="add_another_public_share_link">إضافة رابط آخر</string>
     <string name="add_new_public_share">إضافة رابط مشاركة عام جديد</string>
     <string name="add_to_cloud">أضفه إلى %1$s</string>
+    <string name="allow_creating">السماح بالإنشاء</string>
+    <string name="allow_deleting">السماح بالحذف</string>
     <string name="allow_editing">السماح بالتعديلات</string>
     <string name="allow_resharing">السماح بإعادة المشاركة </string>
     <string name="appbar_search_in">بحث في %s</string>
@@ -45,7 +46,6 @@
     <string name="auth_bad_oc_version_title">إصدار الخادم غير معروف</string>
     <string name="auth_connection_established">تم الاتصال</string>
     <string name="auth_fail_get_user_name">الخادم الخاص بك لا يعيد معرف المستخدم الصحيح، يرجى الاتصال بالمسؤول.</string>
-    <string name="auth_host_address">عنوان الخادم</string>
     <string name="auth_host_url">عنوان الخادوم https://…</string>
     <string name="auth_incorrect_address_title">صيغة عنوانٌ خطأ للخادم</string>
     <string name="auth_incorrect_path_title">لم يتم العثور على الخادم</string>
@@ -77,6 +77,7 @@
     <string name="autoupload_disable_power_save_check">تعطيل التحقق من حفظ الطاقة</string>
     <string name="autoupload_hide_folder">إخفاء المجلد</string>
     <string name="avatar">الصورة الرمزية</string>
+    <string name="away">بالخارج</string>
     <string name="battery_optimization_close">إغلاق</string>
     <string name="battery_optimization_disable">تعطيل</string>
     <string name="battery_optimization_message">قد يكون حفظ البطارية مفعلاً في جهازك. لذلك قد لا يعمل الرفع التلقائي إلا إذا سمحت لهذا التطبيق من أن يستبعد من هذه الميزة.</string>
@@ -88,6 +89,8 @@
     <string name="choose_local_folder">إختر المجلد المحلي…</string>
     <string name="choose_remote_folder">إختر مجلد عن بُعد…</string>
     <string name="clear_notifications_failed">فشلت في إزالة التنبيهات.</string>
+    <string name="clear_status_message">مسح رسالة الحالة</string>
+    <string name="clear_status_message_after">مسح رسالة الحالة بعد</string>
     <string name="clipboard_label">نُسِخ النص من %1$s</string>
     <string name="clipboard_no_text_to_copy">لم يستلم نص لنسخه في الحافظة</string>
     <string name="clipboard_text_copied">نُسِخ الرابط</string>
@@ -109,9 +112,9 @@
     <string name="common_save">حفظ</string>
     <string name="common_send">أرسل</string>
     <string name="common_share">شارك</string>
+    <string name="common_skip">تخطي</string>
     <string name="common_switch_account">تبديل الحساب</string>
     <string name="common_switch_to_account">تبديل إلى حساب</string>
-    <string name="common_unknown">غير معروف</string>
     <string name="common_yes">نعم</string>
     <string name="community_beta_headline">جرب  إصدار المطورين</string>
     <string name="community_beta_text">يشمل هذا جميع المميزات الحديثة ويعتبر طليعة الإصدارات. الأخطاء متوَّقعة، لذا إذا حصلت أخطاء، نرجو منك الإبلاغ عنهم.</string>
@@ -141,7 +144,6 @@
     <string name="conflict_already_existing_file">الملف موجود بالفعل</string>
     <string name="conflict_dialog_error">خطأ في إنشاء حوار التعارض!</string>
     <string name="conflict_message_description">إذا قمت باختيار كلا الاصدارين, الملف المحلي سيحتوي على رقم ملحق باسم الملف.</string>
-    <string name="conflict_message_headline">ماهي الملفات التي ترغب في إبقاءها ؟</string>
     <string name="conflict_new_file">الملف الجديد</string>
     <string name="contaclist_restore_selected">إسترجع جهات الإتصال المختارة</string>
     <string name="contactlist_account_chooser_title">إختر الحساب الذي تود استرجاعه</string>
@@ -167,6 +169,7 @@
     <string name="copy_to">انسخه إلى…</string>
     <string name="could_not_download_image">لايمكن تحميل الصورة بأكملها</string>
     <string name="could_not_retrieve_url">لا يمكن استرجاع الرابط</string>
+    <string name="create">إنشاء</string>
     <string name="create_dir_fail_msg">تعذر إنشاء المُجلّد</string>
     <string name="create_new">إنشاء جديد</string>
     <string name="create_new_document">أنشئ مستندا جديدا</string>
@@ -185,10 +188,13 @@
     <string name="dev_version_new_version_available">هناك نسخة جديدة متوفرة</string>
     <string name="dev_version_no_information_available">لا توجد معلومات متاحة.</string>
     <string name="dev_version_no_new_version_available">لا توجد هناك أية نسخة جديدة متوفرة.</string>
+    <string name="dialog_close">إغلاق</string>
     <string name="digest_algorithm_not_available">خوارزمه الموجز ليست متوفرة على هاتفك.</string>
     <string name="disable_new_media_folder_detection_notifications">تعطيل</string>
     <string name="dismiss">تراجع</string>
     <string name="dismiss_notification_description">تجاهل الاشعار</string>
+    <string name="dnd">عدم الازعاج</string>
+    <string name="dontClear">غير واضح</string>
     <string name="download_latest_dev_version">حمّل آخر إصدار المطورين</string>
     <string name="downloader_download_failed_content">تعذر تنزيل %1$s</string>
     <string name="downloader_download_failed_credentials_error">فشل التنزيل، قم بتسجيل الدخول ثانية</string>
@@ -205,10 +211,10 @@
     <string name="drawer_item_activities">النشاطات</string>
     <string name="drawer_item_all_files">كل الملفات</string>
     <string name="drawer_item_favorites">المفضلة </string>
+    <string name="drawer_item_gallery">وسائط</string>
     <string name="drawer_item_home">الرئيسية</string>
     <string name="drawer_item_notifications">الإخطارات</string>
     <string name="drawer_item_on_device">على الجهاز</string>
-    <string name="drawer_item_photos">الصور</string>
     <string name="drawer_item_recently_added">اضيفت مؤخرا</string>
     <string name="drawer_item_recently_modified">تغيرت مؤخرا</string>
     <string name="drawer_item_shared">المشاركات</string>
@@ -221,8 +227,6 @@
     <string name="drawer_quota_unlimited">%1$s مُسّتخدم</string>
     <string name="drawer_synced_folders">تحميل تلقائي</string>
     <string name="edit_label">غير الإسم</string>
-    <string name="edit_permission_label">تعديل</string>
-    <string name="edit_rich_workspace">عدِّل معلومات المجلد</string>
     <string name="encrypted">عيّنه كَمشفر</string>
     <string name="end_to_end_encryption_confirm_button">تنصيب التشفير</string>
     <string name="end_to_end_encryption_decrypting">فك التعمية جارٍ…</string>
@@ -232,7 +236,6 @@
     <string name="end_to_end_encryption_generating_keys">توليد مفاتيح جديدة…</string>
     <string name="end_to_end_encryption_keywords_description">12 كلمة مع بعض تكون رقم سري قوّي جداً، تجعلك أنت فقط ترى وتستخدم ملفاتك المشفرة. أرجو كتابتها والإحتفاظ فها في مكانٍّ آمن.</string>
     <string name="end_to_end_encryption_not_enabled">التشفير من طرف إلى طرف آخر معطل من الخادم.</string>
-    <string name="end_to_end_encryption_not_supported">التشفير يعمل في نسخة كتكات (4.4) وما فوق فقط.</string>
     <string name="end_to_end_encryption_passphrase_title">إحفظ الـ12 كلمة السرية للتشفير</string>
     <string name="end_to_end_encryption_password">كلمة السر…</string>
     <string name="end_to_end_encryption_retrieving_keys">جارٍ جلب المفاتيح…</string>
@@ -263,9 +266,6 @@
     <string name="etm_background_jobs_schedule_test_job">جدولة مهمة تجريبية</string>
     <string name="etm_background_jobs_start_test_job">بدء المهمة التجريبية</string>
     <string name="etm_background_jobs_stop_test_job">إيقاف المهمة التجريبية</string>
-    <string name="etm_download_enqueue_test_download">إدراج بقائمة التحميل التجريبي للانتظار</string>
-    <string name="etm_download_path">المسار البعيد</string>
-    <string name="etm_downloader">مُحمل</string>
     <string name="etm_migrations">عمليات الترحيل (ترقية التطبيق)</string>
     <string name="etm_preferences">الخيارات</string>
     <string name="etm_title">وضع الهندسة التجريبي</string>
@@ -282,33 +282,23 @@
     <string name="file_keep">إحتفاظ</string>
     <string name="file_list_empty">قم برفع بعض المحتوى أو زامن مع أجهزتك</string>
     <string name="file_list_empty_favorite_headline">ليست عندك مفضلات بعد</string>
-    <string name="file_list_empty_favorites_filter">بحثك لم ينتج عن ملفات مفضلة.</string>
     <string name="file_list_empty_favorites_filter_list">الملفات والمجلدات التي تضع عليها علامة كمفضلة سوف تظهر هنا.</string>
     <string name="file_list_empty_headline">لا يوجد ملفات هنا </string>
     <string name="file_list_empty_headline_search">لم يتم العثور على أية بيانات في هذا المجلد</string>
     <string name="file_list_empty_headline_server_search">دون أية نتيجة</string>
-    <string name="file_list_empty_headline_server_search_photos">لم يتم العثور على أية صورة</string>
-    <string name="file_list_empty_headline_server_search_videos">لا يوجد فيديوهات</string>
     <string name="file_list_empty_moving">لا يوجد شيء هنا. يمكنك إضافة مجلد.</string>
     <string name="file_list_empty_on_device">الملفات والمجلدات التي تم تنزيلها سوف تظهر هنا.</string>
     <string name="file_list_empty_recently_added">لم توجد ملفات مضافة مؤخراً</string>
-    <string name="file_list_empty_recently_added_filter">لا يوجد ملفات مضافة مؤخراً.</string>
     <string name="file_list_empty_recently_modified">لم توجد ملفات معدلة خلال 7 أيام ماضية</string>
-    <string name="file_list_empty_recently_modified_filter">لا ملفات معدلة لآخر 7 أيام ماضية.</string>
     <string name="file_list_empty_search">ربما كنت تنوي البحث داخل مجلد آخر ؟</string>
     <string name="file_list_empty_shared">الملفات والمجلدات التي تم مشاركتها سوف تظهر هنا.</string>
     <string name="file_list_empty_shared_headline">لم تقم بمشاركة أية بيانات بعد</string>
-    <string name="file_list_empty_text_photos">قم بتحميل بعض الصور أو قم بتفعيل التحميل التلقائي.</string>
-    <string name="file_list_empty_text_photos_filter">لا توجد صور.</string>
-    <string name="file_list_empty_text_videos">قم بتحميل بعض الفيديوهات أو قم بتفعيل التحميل التلقائي.</string>
-    <string name="file_list_empty_text_videos_filter">لا توجد فيديوهات.</string>
     <string name="file_list_folder">مجلد</string>
     <string name="file_list_loading">Lعملية التحميل جارية…</string>
     <string name="file_list_no_app_for_file_type">لم يُعّد تطبيق يدعم نوع الملف هذا.</string>
     <string name="file_list_seconds_ago">منذ ثواني</string>
     <string name="file_migration_checking_destination">جار التحقق من الوجهة…</string>
     <string name="file_migration_cleaning">تنظيف…</string>
-    <string name="file_migration_dialog_title">تحديث مسار التخزين</string>
     <string name="file_migration_directory_already_exists">مجلد البيانات موجود مسبقاً. إختر واحدّ من التالي:</string>
     <string name="file_migration_failed_dir_already_exists">مجلد Nextcloud موجود مسبقاً</string>
     <string name="file_migration_failed_not_enough_space">بحاجة إلى مساحة إضافية</string>
@@ -322,8 +312,6 @@
     <string name="file_migration_preparing">جار تهيئة عملية الترحيل…</string>
     <string name="file_migration_restoring_accounts_configuration">إرجاع إعدادات الحساب…</string>
     <string name="file_migration_saving_accounts_configuration">حفظ إعدادات الحساب…</string>
-    <string name="file_migration_source_not_readable">هل لازلت تريد تغيير مسار التخزين إلى %1$s؟
-ملاحظة: ستحمل جميع البيانات من جديد.</string>
     <string name="file_migration_source_not_readable_title">ملف المصدر غير قابل للقرائة!</string>
     <string name="file_migration_updating_index">تحديث الفهرس…</string>
     <string name="file_migration_use_data_folder">استعمل</string>
@@ -363,6 +351,7 @@
     <string name="foreign_files_remote_text">عن بعد : %1$s</string>
     <string name="foreign_files_success">تم نقل كافة الملفات</string>
     <string name="forward">إعادة توجيه </string>
+    <string name="fourHours">4 ساعات</string>
     <string name="hint_name">الاسم</string>
     <string name="hint_note">ملاحظة</string>
     <string name="hint_password">الكلمة السرية</string>
@@ -372,6 +361,7 @@
     <string name="instant_upload_on_charging">إرفع وقت الشحن فقط</string>
     <string name="instant_upload_path">/InstantUpload</string>
     <string name="invalid_url">رابط غير صالح</string>
+    <string name="invisible">عدم الظهور</string>
     <string name="label_empty">لا يمكن أن تكون التسمية فارغه</string>
     <string name="link">الرابط</string>
     <string name="link_share_allow_upload_and_editing">السماح بالرفع و التعديل</string>
@@ -383,17 +373,14 @@
     <string name="local_folder_friendly_path">%1$s/%2$s</string>
     <string name="local_folder_list_empty">لا توجد مجلدات أخرى.</string>
     <string name="log_send_mail_subject">%1$s سجلات تطبيق الأندرويد</string>
-    <string name="log_send_no_mail_app">لم يتم العثور على تطبيق لإرسال السجلات. الرجاء تثبيت عميل بريد إلكتروني.</string>
     <string name="login">تسجيل الدخول</string>
     <string name="logs_menu_delete">احذف السجلات</string>
     <string name="logs_menu_refresh">إنعاش</string>
     <string name="logs_menu_search">البحث في السجلات</string>
-    <string name="logs_menu_send">إرسال سجلات بالبريد الإلكتروني</string>
     <string name="logs_status_filtered">سجلات: %1$d كيلو بايت، مطابقة الإستعلام %2$d \ %3$d خلال %4$d جزء من الثانية</string>
     <string name="logs_status_loading">التحميل جارٍ…</string>
     <string name="logs_status_not_filtered">سجلات: %1$d كيلو بايت، بدون فلتر</string>
     <string name="logs_title">السجلات</string>
-    <string name="maintenance_mode">الخادوم في وضع الصيانة</string>
     <string name="manage_space_clear_data">مسح البيانات</string>
     <string name="manage_space_description">ستحذف الإعدادات وقواعد البيانات وشهادة الخادم من %1$s نهائياً.
 
@@ -401,7 +388,6 @@
 
 قد تستغرق هذه العملية بعض الوقت.</string>
     <string name="manage_space_title">إدارة المساحة</string>
-    <string name="media_err_invalid_progressive_playback">ملف الوسائط ﻻ يمكن عرضه</string>
     <string name="media_err_io">تعذرت قراءة ملف الوسائط</string>
     <string name="media_err_malformed">يحتوي ملف الوسائط على ترميز غير صحيح</string>
     <string name="media_err_timeout">انتهت مهلة محاولة تشغيل الملف</string>
@@ -455,11 +441,12 @@
     <string name="notification_channel_upload_description">يظهر تقدم الرفع</string>
     <string name="notification_channel_upload_name">قناة التنبيه للرفع</string>
     <string name="notification_icon">أيقونة الإشعار</string>
-    <string name="notifications_loading_activity">تحميل التنبيهات…</string>
     <string name="notifications_no_results_headline">لا توجد هناك إخطارات</string>
     <string name="notifications_no_results_message">يرجى التحقق مرة أخرى في وقت لاحق.</string>
     <string name="offline_mode">ليس هناك اتصال بالأنترنت</string>
-    <string name="oneHour">ساعة</string>
+    <string name="oneHour">1 ساعة</string>
+    <string name="online">متصل</string>
+    <string name="online_status">حالات الاتصال</string>
     <string name="outdated_server">وصل الخادم إلى نهاية العمر الافتراضي ، يرجى الترقية!</string>
     <string name="overflow_menu">المزيد من القائمة</string>
     <string name="pass_code_configure_your_pass_code">إدخل رمزك السري</string>
@@ -480,12 +467,14 @@
     <string name="placeholder_media_time">12:23:45</string>
     <string name="placeholder_sentence">هذه مساحة محجوزة</string>
     <string name="placeholder_timestamp">2012/05/18 12:23 مساء</string>
+    <string name="player_stop">إيقاف</string>
     <string name="power_save_check_dialog_message">قد يؤدي تعطيل فحص حفظ الطاقة إلى تحميل الملفات عندما تكون حالة البطارية منخفضة!</string>
     <string name="pref_behaviour_entries_delete_file">خذفت</string>
     <string name="pref_behaviour_entries_keep_file">ترك في مجلد الأصل</string>
     <string name="pref_behaviour_entries_move">تم نقله إلى مجلد التطبيق</string>
     <string name="pref_instant_name_collision_policy_dialogTitle">ماذا تفعل إذا كان الملف موجودًا مسبقاً؟</string>
     <string name="pref_instant_name_collision_policy_entries_always_ask">إسئلني كل مرة</string>
+    <string name="pref_instant_name_collision_policy_entries_cancel">إلغاء التحميل</string>
     <string name="pref_instant_name_collision_policy_entries_overwrite">استبدال النسخة البعيدة</string>
     <string name="pref_instant_name_collision_policy_entries_rename">إعادة تسمية الإصدار الجديد</string>
     <string name="pref_instant_name_collision_policy_title">ماذا تفعل إذا كان الملف موجودًا مسبقاً؟</string>
@@ -524,7 +513,8 @@
     <string name="prefs_recommend">يوصي لصديق</string>
     <string name="prefs_show_hidden_files">عرض الملفات المخفية</string>
     <string name="prefs_sourcecode">الحصول على الشفرة المصدرية</string>
-    <string name="prefs_storage_path">مسار التخزين</string>
+    <string name="prefs_storage_path">مجلد تخزين البيانات</string>
+    <string name="prefs_sycned_folders_summary">إدارة الملفات للتحميل التلقائي</string>
     <string name="prefs_synced_folders_local_path_title">مجلد محلي</string>
     <string name="prefs_synced_folders_remote_path_title">مجلد عن بعد</string>
     <string name="prefs_theme_title">المظهر</string>
@@ -540,11 +530,11 @@
     <string name="push_notifications_not_implemented">تم تعطيل الإشعارات الفورية بسبب التبعيات على خدمات Google Play المملوكة.</string>
     <string name="push_notifications_old_login">لا توجد إشعارات دفع بسبب جلسة تسجيل الدخول القديمة. يرجى النظر في إعادة إضافة حسابك.</string>
     <string name="push_notifications_temp_error">إشعارات الدفع غير متوفرة حاليا.</string>
-    <string name="qr_could_not_be_read">لا يمكن قراءة رمز الاستجابة السريعةQR!</string>
     <string name="recommend_subject">جرب %1$s على جهازك !</string>
     <string name="recommend_text">أريد أن أدعوك لاستخدام %1$s على جهازك
 التنزيل هنا %2$s</string>
     <string name="recommend_urls">%1$s أو %2$s</string>
+    <string name="remote">(عن بعد)</string>
     <string name="remote_file_fetch_failed">فشل في العثور على الملف!</string>
     <string name="remove_fail_msg">فشلت عملية الحذف</string>
     <string name="remove_notification_failed">فشل في إزالة الإخطار.</string>
@@ -574,22 +564,24 @@
     <string name="screenshot_06_davdroid_heading">التقويم &amp; جهات الإتصال</string>
     <string name="screenshot_06_davdroid_subline">مزامنة مع DAVx5</string>
     <string name="select_all">تحديد الكل</string>
+    <string name="select_one_template">الرجاء تحديد قالب واحد</string>
     <string name="select_template">حدد قالب</string>
     <string name="send">ارسال</string>
     <string name="send_note">إرسال ملاحظة إلى المستلم</string>
     <string name="sendbutton_description">أيقونة زر الإرسال</string>
     <string name="set_as">احفظ كـ</string>
     <string name="set_picture_as">إستخدم الصورة كـ</string>
+    <string name="set_status">تعيين الحالة</string>
+    <string name="set_status_message">تعيين رسالة الحالة</string>
     <string name="share">مشاركة </string>
     <string name="share_dialog_title">مشاركة</string>
-    <string name="share_email_clarification">%1$s(بريد)</string>
     <string name="share_expiration_date_label">تنتهي %1$s</string>
     <string name="share_file">شارك %1$s</string>
     <string name="share_group_clarification">%1$s(مجموعة)</string>
     <string name="share_internal_link">شارك الرابط الداخلي</string>
     <string name="share_internal_link_to_file_text">يعمل رابط المشاركة الداخلية فقط للمستخدمين الذين لديهم حق الوصول إلى هذا الملف</string>
     <string name="share_internal_link_to_folder_text">يعمل رابط المشاركة الداخلية فقط للمستخدمين الذين لديهم حق الوصول إلى هذا المجلد</string>
-    <string name="share_known_remote_clarification">%1$s ( على %2$s )</string>
+    <string name="share_known_remote_on_clarification">على %1$s</string>
     <string name="share_link">مشاركة الرابط</string>
     <string name="share_link_empty_password">يجب عليك إدخال كلمة مرور</string>
     <string name="share_link_file_error">حدث خطأ أثناء محاولة مشاركة هذا الملف أو المجلد.</string>
@@ -597,19 +589,15 @@
     <string name="share_link_forbidden_permissions">لمشاركة هذا الملف</string>
     <string name="share_link_optional_password_title">ادخل كلمة سرية اختيارية</string>
     <string name="share_link_password_title">إدخِل كلمة السر</string>
+    <string name="share_link_with_label">مشاركة الرابط (%1$s)</string>
     <string name="share_no_expiration_date_label">تعيين تاريخ إنتهاء الصلاحية</string>
     <string name="share_no_password_title">تعيين كلمة سرية</string>
     <string name="share_password_title">محمي بكلمة مرور</string>
-    <string name="share_privilege_can_edit_change">يمكنه تعديله</string>
-    <string name="share_privilege_can_edit_create">يمكنه الإنشاء</string>
-    <string name="share_privilege_can_edit_delete">يمكنه حذفه</string>
-    <string name="share_privilege_can_share">يمكن المشاركة</string>
     <string name="share_privilege_unshare">إلغاء المشاركة</string>
     <string name="share_remote_clarification">%1$s (بعيد)</string>
     <string name="share_room_clarification">%1$s (محادثة)</string>
     <string name="share_send_note">ملاحظة للمستلم</string>
     <string name="share_via_link_hide_download">إخفاء التنزيل</string>
-    <string name="share_via_link_hide_file_listing_permission_label">إخفاء قائمة الملفات</string>
     <string name="share_via_link_menu_password_label">إحمي بكلمة المرور (%1$s)</string>
     <string name="share_via_link_section_title">شارك الرابط</string>
     <string name="share_via_link_send_link_label">ارسل الرابط</string>
@@ -655,6 +643,7 @@
     <string name="ssl_validator_reason_cert_not_trusted">شهادة الخادم غير موثوقة</string>
     <string name="ssl_validator_reason_cert_not_yet_valid">وقت صلاحية شهادة الخادم لم يحن بعد</string>
     <string name="ssl_validator_reason_hostname_not_verified">الرابط لا يوافق اسم المضيف فى  شهاده الحماية </string>
+    <string name="status_message">رسالة الحالات</string>
     <string name="storage_camera">الكاميرا</string>
     <string name="storage_choose_location">اختر مكان التخزين</string>
     <string name="storage_description_default">افتراضي</string>
@@ -693,7 +682,6 @@
     <string name="sync_string_files">الملفات</string>
     <string name="synced_folder_settings_button">زر الإعدادات</string>
     <string name="synced_folders_configure_folders">إعداد المجلدات</string>
-    <string name="synced_folders_loading_folders">جارٍ تحميل المجلدات…</string>
     <string name="synced_folders_new_info">تم تجديد التحميل الفوري بالكامل. أعد تكوين التحميل التلقائي من القائمة الرئيسية.
 
 استمتع بالتحميل التلقائي الجديد والممتد.</string>
@@ -716,7 +704,6 @@
     <string name="trashbin_empty_message">ستتمكن من استعادة الملفات المحذوفة من هنا.</string>
     <string name="trashbin_file_not_deleted">الملف %1$s لا يمكن حذفه!</string>
     <string name="trashbin_file_not_restored">الملف %1$s لا يمكن إسترجاعه!</string>
-    <string name="trashbin_loading_failed">فشل تحميل سلة المهملات!</string>
     <string name="trashbin_not_emptied">تعذر حذف الملفات نهائياً!</string>
     <string name="unread_comments">توجد تعليقات غير مقروءة</string>
     <string name="unset_encrypted">لم يتم تحديد التشفير</string>
@@ -761,7 +748,6 @@
     <string name="uploader_error_message_read_permission_not_granted">%1$s غير مسموح له أن يقرأ ملفاً مستلماً</string>
     <string name="uploader_error_message_source_file_not_copied">لا يمكن نسخ الملف إلى مجلد مؤقت. حاول إعادة إرساله.</string>
     <string name="uploader_error_message_source_file_not_found">لم يتم إيجاد الملف المحدد للرفع. الرجاء التأكد من أن الملف موجود.</string>
-    <string name="uploader_error_title_file_cannot_be_uploaded">لا يمكن رفع هذا الملف</string>
     <string name="uploader_error_title_no_file_to_upload">لا يوجد ملف لترفعه</string>
     <string name="uploader_info_dirname">اسم المجلد</string>
     <string name="uploader_top_message">إختر مجلد للرفع</string>
@@ -807,7 +793,6 @@
     <string name="uploads_view_upload_status_waiting_for_wifi">في انتظار شبكة Wi-Fi غير محدودة</string>
     <string name="user_icon">المستخدم</string>
     <string name="user_info_address"> العنوان</string>
-    <string name="user_info_email">البريد الإلكتروني</string>
     <string name="user_info_phone"> رقم الهاتف</string>
     <string name="user_info_twitter">تويتر</string>
     <string name="user_info_website"> الموقع الإلكتروني</string>
@@ -822,6 +807,7 @@
     <string name="what_s_new_image">ما هي الصورة الجديدة</string>
     <string name="whats_new_skip">تخطى</string>
     <string name="whats_new_title">جديد على %1$s</string>
+    <string name="whats_your_status">ماهي حالتك؟</string>
     <plurals name="sync_fail_in_favourites_content">
         <item quantity="zero">تعذرت مزامنة الملفات %1$d (التعارضات:%2$d)</item>
         <item quantity="one">تعذرت مزامنة الملفات %1$d (التعارضات:%2$d)</item>

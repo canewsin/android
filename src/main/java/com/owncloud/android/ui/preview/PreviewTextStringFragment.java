@@ -22,8 +22,6 @@
 
 package com.owncloud.android.ui.preview;
 
-import android.accounts.Account;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.LayoutInflater;
@@ -37,11 +35,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.nextcloud.android.lib.richWorkspace.RichWorkspaceDirectEditingRemoteOperation;
 import com.nextcloud.client.account.UserAccountManager;
 import com.owncloud.android.R;
-import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.ui.activity.FileDisplayActivity;
 import com.owncloud.android.utils.DisplayUtils;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeFabUtils;
 
 import javax.inject.Inject;
 
@@ -56,11 +53,6 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
 
     /**
      * Creates an empty fragment for previews.
-     * <p>
-     * MUST BE KEPT: the system uses it when tries to re-instantiate a fragment automatically (for instance, when the
-     * device is turned a aside).
-     * <p>
-     * DO NOT CALL IT: an {@link OCFile} and {@link Account} must be provided for a successful construction
      */
     public PreviewTextStringFragment() {
         super();
@@ -78,11 +70,11 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
         Bundle args = getArguments();
 
         if (args.containsKey(FileDisplayActivity.EXTRA_SEARCH_QUERY)) {
-            mSearchQuery = args.getString(FileDisplayActivity.EXTRA_SEARCH_QUERY);
+            searchQuery = args.getString(FileDisplayActivity.EXTRA_SEARCH_QUERY);
         }
-        mSearchOpen = args.getBoolean(FileDisplayActivity.EXTRA_SEARCH, false);
+        searchOpen = args.getBoolean(FileDisplayActivity.EXTRA_SEARCH, false);
 
-        mHandler = new Handler();
+        handler = new Handler();
     }
 
     /**
@@ -104,15 +96,10 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
         }
 
         FloatingActionButton fabMain = requireActivity().findViewById(R.id.fab_main);
-
-        if (android.os.Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
-            fabMain.setVisibility(View.GONE);
-        } else {
-            fabMain.setVisibility(View.VISIBLE);
-            fabMain.setEnabled(true);
-            fabMain.setOnClickListener(v -> edit());
-            ThemeUtils.colorFloatingActionButton(fabMain, R.drawable.ic_edit, requireContext());
-        }
+        fabMain.setVisibility(View.VISIBLE);
+        fabMain.setEnabled(true);
+        fabMain.setOnClickListener(v -> edit());
+        ThemeFabUtils.colorFloatingActionButton(fabMain, R.drawable.ic_edit, requireContext());
 
         return view;
     }
@@ -126,27 +113,23 @@ public class PreviewTextStringFragment extends PreviewTextFragment {
 
         MenuItem menuItem = menu.findItem(R.id.action_search);
         menuItem.setVisible(true);
-        mSearchView = (SearchView) MenuItemCompat.getActionView(menuItem);
-        mSearchView.setOnQueryTextListener(this);
-        mSearchView.setMaxWidth(Integer.MAX_VALUE);
+        searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        searchView.setOnQueryTextListener(this);
+        searchView.setMaxWidth(Integer.MAX_VALUE);
 
-        if (mSearchOpen) {
-            mSearchView.setIconified(false);
-            mSearchView.setQuery(mSearchQuery, true);
-            mSearchView.clearFocus();
+        if (searchOpen) {
+            searchView.setIconified(false);
+            searchView.setQuery(searchQuery, true);
+            searchView.clearFocus();
         }
     }
 
     void loadAndShowTextPreview() {
-        if (mTextPreview != null) {
-            mOriginalText = getFile().getRichWorkspace();
-            setText(mTextPreview, mOriginalText, getFile(), requireActivity(), true, false);
-            mTextPreview.setVisibility(View.VISIBLE);
-        }
+        originalText = getFile().getRichWorkspace();
+        setText(binding.textPreview, originalText, getFile(), requireActivity(), true, false);
 
-        if (mMultiListContainer != null) {
-            mMultiListContainer.setVisibility(View.GONE);
-        }
+        binding.textPreview.setVisibility(View.VISIBLE);
+        binding.emptyListProgress.setVisibility(View.GONE);
     }
 
     private void edit() {

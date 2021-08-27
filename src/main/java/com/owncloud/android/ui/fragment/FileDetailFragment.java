@@ -34,22 +34,18 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.nextcloud.client.account.User;
 import com.nextcloud.client.account.UserAccountManager;
-import com.nextcloud.client.device.DeviceInfo;
 import com.nextcloud.client.di.Injectable;
 import com.nextcloud.client.network.ConnectivityService;
 import com.nextcloud.client.preferences.AppPreferences;
 import com.owncloud.android.MainApp;
 import com.owncloud.android.R;
+import com.owncloud.android.databinding.FileDetailsFragmentBinding;
 import com.owncloud.android.datamodel.FileDataStorageManager;
 import com.owncloud.android.datamodel.OCFile;
 import com.owncloud.android.datamodel.ThumbnailsCacheManager;
@@ -65,7 +61,9 @@ import com.owncloud.android.ui.dialog.RemoveFilesDialogFragment;
 import com.owncloud.android.ui.dialog.RenameFileDialogFragment;
 import com.owncloud.android.utils.DisplayUtils;
 import com.owncloud.android.utils.MimeTypeUtil;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeBarUtils;
+import com.owncloud.android.utils.theme.ThemeColorUtils;
+import com.owncloud.android.utils.theme.ThemeLayoutUtils;
 
 import java.lang.ref.WeakReference;
 
@@ -74,10 +72,6 @@ import javax.inject.Inject;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
-import androidx.viewpager.widget.ViewPager;
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 
 /**
  * This Fragment is used to display the details about a file.
@@ -90,61 +84,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private static final String ARG_FILE = "FILE";
     private static final String ARG_USER = "USER";
     private static final String ARG_ACTIVE_TAB = "TAB";
-
-    @BindView(R.id.detail_container)
-    LinearLayout detailContainer;
-
-    @BindView(R.id.progressBlock)
-    View downloadProgressContainer;
-
-    @BindView(R.id.cancelBtn)
-    ImageButton cancelButton;
-
-    @BindView(R.id.progressBar)
-    ProgressBar progressBar;
-
-    @BindView(R.id.progressText)
-    TextView progressText;
-
-    @BindView(R.id.filename)
-    TextView fileName;
-
-    @BindView(R.id.size)
-    TextView fileSize;
-
-    @BindView(R.id.last_modification_timestamp)
-    TextView fileModifiedTimestamp;
-
-    @BindView(R.id.favorite)
-    ImageView favoriteIcon;
-
-    @BindView(R.id.overflow_menu)
-    ImageView overflowMenu;
-
-    @BindView(R.id.tab_layout)
-    TabLayout tabLayout;
-
-    @BindView(R.id.pager)
-    ViewPager viewPager;
-
-    @BindView(R.id.empty_list_view)
-    public LinearLayout emptyContentContainer;
-
-    @BindView(R.id.empty_list_view_headline)
-    public TextView emptyContentHeadline;
-
-    @BindView(R.id.empty_list_icon)
-    public ImageView emptyContentIcon;
-
-    @BindView(R.id.empty_list_progress)
-    public ProgressBar emptyContentProgressBar;
-
-    private int layout;
     private View view;
     private User user;
-    private Unbinder unbinder;
     private boolean previewLoaded;
 
+    private FileDetailsFragmentBinding binding;
     private ProgressListener progressListener;
     private ToolbarActivity toolbarActivity;
     private int activeTab;
@@ -152,7 +96,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     @Inject AppPreferences preferences;
     @Inject ConnectivityService connectivityService;
     @Inject UserAccountManager accountManager;
-    @Inject DeviceInfo deviceInfo;
 
     /**
      * Public factory method to create new FileDetailFragment instances.
@@ -201,7 +144,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     public FileDetailFragment() {
         super();
         user = null;
-        layout = R.layout.file_details_fragment;
         progressListener = null;
     }
 
@@ -211,7 +153,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return reference to the {@link FileDetailSharingFragment}
      */
     public FileDetailSharingFragment getFileDetailSharingFragment() {
-        return ((FileDetailTabAdapter)viewPager.getAdapter()).getFileDetailSharingFragment();
+        return ((FileDetailTabAdapter) binding.pager.getAdapter()).getFileDetailSharingFragment();
     }
 
     /**
@@ -220,7 +162,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return reference to the {@link FileDetailActivitiesFragment}
      */
     public FileDetailActivitiesFragment getFileDetailActivitiesFragment() {
-        return ((FileDetailTabAdapter) viewPager.getAdapter()).getFileDetailActivitiesFragment();
+        return ((FileDetailTabAdapter) binding.pager.getAdapter()).getFileDetailActivitiesFragment();
     }
 
     @Override
@@ -247,13 +189,13 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             user = savedInstanceState.getParcelable(ARG_USER);
         }
 
-        view = inflater.inflate(layout, null);
-        unbinder = ButterKnife.bind(this, view);
+        binding = FileDetailsFragmentBinding.inflate(inflater,container,false);
+        view = binding.getRoot();
 
         if (getFile() == null || user == null) {
             showEmptyContent();
         } else {
-            emptyContentContainer.setVisibility(View.GONE);
+            binding.emptyList.emptyListView.setVisibility(View.GONE);
         }
 
         return view;
@@ -262,12 +204,12 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         if (getFile() != null && user != null) {
-            ThemeUtils.colorHorizontalProgressBar(progressBar, ThemeUtils.primaryAccentColor(getContext()));
-            progressListener = new ProgressListener(progressBar);
-            cancelButton.setOnClickListener(this);
-            favoriteIcon.setOnClickListener(this);
-            overflowMenu.setOnClickListener(this);
-            fileModifiedTimestamp.setOnClickListener(this);
+            ThemeBarUtils.colorHorizontalProgressBar(binding.progressBar, ThemeColorUtils.primaryAccentColor(getContext()));
+            progressListener = new ProgressListener(binding.progressBar);
+            binding.cancelBtn.setOnClickListener(this);
+            binding.favorite.setOnClickListener(this);
+            binding.overflowMenu.setOnClickListener(this);
+            binding.lastModificationTimestamp.setOnClickListener(this);
 
             updateFileDetails(false, false);
         }
@@ -283,17 +225,16 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     }
 
     private void setupViewPager() {
-        tabLayout.removeAllTabs();
+        binding.tabLayout.removeAllTabs();
 
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.drawer_item_activities));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.share_dialog_title));
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.drawer_item_activities).setIcon(R.drawable.ic_activity));
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText(R.string.share_dialog_title).setIcon(R.drawable.shared_via_users));
 
-        tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        tabLayout.setSelectedTabIndicatorColor(ThemeUtils.primaryAccentColor(getContext()));
+        ThemeLayoutUtils.colorTabLayout(getContext().getApplicationContext(), binding.tabLayout);
 
         final FileDetailTabAdapter adapter = new FileDetailTabAdapter(getFragmentManager(), getFile(), user);
-        viewPager.setAdapter(adapter);
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabLayout) {
+        binding.pager.setAdapter(adapter);
+        binding.pager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(binding.tabLayout) {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
                 if (activeTab == 0) {
@@ -303,10 +244,10 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                 super.onPageScrolled(position, positionOffset, positionOffsetPixels);
             }
         });
-        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+        binding.tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                viewPager.setCurrentItem(tab.getPosition());
+                binding.pager.setCurrentItem(tab.getPosition());
 
                 if (tab.getPosition() == 0) {
                     FileDetailActivitiesFragment fragment = getFileDetailActivitiesFragment();
@@ -328,7 +269,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
             }
         });
 
-        tabLayout.getTabAt(activeTab).select();
+        binding.tabLayout.getTabAt(activeTab).select();
     }
 
     @Override
@@ -383,9 +324,9 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        unbinder.unbind();
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 
     @Override
@@ -408,7 +349,6 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                 containerActivity,
                 getActivity(),
                 false,
-                deviceInfo,
                 currentUser
             );
 
@@ -422,79 +362,59 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     }
 
     private boolean optionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_send_file: {
-                containerActivity.getFileOperationsHelper().sendShareFile(getFile(), true);
-                return true;
-            }
-            case R.id.action_open_file_with: {
-                containerActivity.getFileOperationsHelper().openFile(getFile());
-                return true;
-            }
-            case R.id.action_remove_file: {
-                RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), FTAG_CONFIRMATION);
-                return true;
-            }
-            case R.id.action_rename_file: {
-                RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(getFile());
-                dialog.show(getFragmentManager(), FTAG_RENAME_FILE);
-                return true;
-            }
-            case R.id.action_cancel_sync: {
-                ((FileDisplayActivity) containerActivity).cancelTransference(getFile());
-                return true;
-            }
-            case R.id.action_download_file:
-            case R.id.action_sync_file: {
-                containerActivity.getFileOperationsHelper().syncFile(getFile());
-                return true;
-            }
-            case R.id.action_set_as_wallpaper:  {
-                containerActivity.getFileOperationsHelper().setPictureAs(getFile(), getView());
-                return true;
-            }
-            case R.id.action_encrypted: {
-                // TODO implement or remove
-                return true;
-            }
-            case R.id.action_unset_encrypted: {
-                // TODO implement or remove
-                return true;
-            }
-            default:
-                return super.onOptionsItemSelected(item);
+        int itemId = item.getItemId();
+
+        if (itemId == R.id.action_send_file) {
+            containerActivity.getFileOperationsHelper().sendShareFile(getFile(), true);
+            return true;
+        } else if (itemId == R.id.action_open_file_with) {
+            containerActivity.getFileOperationsHelper().openFile(getFile());
+            return true;
+        } else if (itemId == R.id.action_remove_file) {
+            RemoveFilesDialogFragment dialog = RemoveFilesDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), FTAG_CONFIRMATION);
+            return true;
+        } else if (itemId == R.id.action_rename_file) {
+            RenameFileDialogFragment dialog = RenameFileDialogFragment.newInstance(getFile());
+            dialog.show(getFragmentManager(), FTAG_RENAME_FILE);
+            return true;
+        } else if (itemId == R.id.action_cancel_sync) {
+            ((FileDisplayActivity) containerActivity).cancelTransference(getFile());
+            return true;
+        } else if (itemId == R.id.action_download_file || itemId == R.id.action_sync_file) {
+            containerActivity.getFileOperationsHelper().syncFile(getFile());
+            return true;
+        } else if (itemId == R.id.action_set_as_wallpaper) {
+            containerActivity.getFileOperationsHelper().setPictureAs(getFile(), getView());
+            return true;
+        } else if (itemId == R.id.action_encrypted) {// TODO implement or remove
+            return true;
+        } else if (itemId == R.id.action_unset_encrypted) {// TODO implement or remove
+            return true;
         }
+
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.cancelBtn: {
-                ((FileDisplayActivity) containerActivity).cancelTransference(getFile());
-                break;
-            }
-            case R.id.favorite: {
-                if (getFile().isFavorite()) {
-                    containerActivity.getFileOperationsHelper().toggleFavoriteFile(getFile(), false);
-                } else {
-                    containerActivity.getFileOperationsHelper().toggleFavoriteFile(getFile(), true);
-                }
-                setFavoriteIconStatus(!getFile().isFavorite());
-                break;
-            }
-            case R.id.overflow_menu: {
-                onOverflowIconClicked(v);
-                break;
-            }
-            case R.id.last_modification_timestamp: {
-                boolean showDetailedTimestamp = !preferences.isShowDetailedTimestampEnabled();
-                preferences.setShowDetailedTimestampEnabled(showDetailedTimestamp);
-                setFileModificationTimestamp(getFile(), showDetailedTimestamp);
-            }
-            default:
-                Log_OC.e(TAG, "Incorrect view clicked!");
-                break;
+        int id = v.getId();
+
+        if (id == R.id.cancelBtn) {
+            ((FileDisplayActivity) containerActivity).cancelTransference(getFile());
+        } else if (id == R.id.favorite) {
+            containerActivity.getFileOperationsHelper().toggleFavoriteFile(getFile(), !getFile().isFavorite());
+            setFavoriteIconStatus(!getFile().isFavorite());
+        } else if (id == R.id.overflow_menu) {
+            onOverflowIconClicked(v);
+        } else if (id == R.id.last_modification_timestamp) {
+            boolean showDetailedTimestamp = !preferences.isShowDetailedTimestampEnabled();
+            preferences.setShowDetailedTimestampEnabled(showDetailedTimestamp);
+            setFileModificationTimestamp(getFile(), showDetailedTimestamp);
+
+            Log_OC.e(TAG, "Incorrect view clicked!");
+        } else {
+            Log_OC.e(TAG, "Incorrect view clicked!");
         }
     }
 
@@ -504,7 +424,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return True when the fragment was created with the empty layout.
      */
     public boolean isEmpty() {
-        return layout == R.layout.empty_list || getFile() == null || user == null;
+        return getFile() == null || user == null;
     }
 
     /**
@@ -543,11 +463,11 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
 
             // set file details
             if (MimeTypeUtil.isImage(file)) {
-                fileName.setText(file.getFileName());
+                binding.filename.setText(file.getFileName());
             } else {
-                fileName.setVisibility(View.GONE);
+                binding.filename.setVisibility(View.GONE);
             }
-            fileSize.setText(DisplayUtils.bytesToHumanReadable(file.getFileLength()));
+            binding.size.setText(DisplayUtils.bytesToHumanReadable(file.getFileLength()));
 
             boolean showDetailedTimestamp = preferences.isShowDetailedTimestampEnabled();
             setFileModificationTimestamp(file, showDetailedTimestamp);
@@ -581,18 +501,18 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
 
     private void setFileModificationTimestamp(OCFile file, boolean showDetailedTimestamp) {
         if (showDetailedTimestamp) {
-            fileModifiedTimestamp.setText(DisplayUtils.unixTimeToHumanReadable(file.getModificationTimestamp()));
+            binding.lastModificationTimestamp.setText(DisplayUtils.unixTimeToHumanReadable(file.getModificationTimestamp()));
         } else {
-            fileModifiedTimestamp.setText(DisplayUtils.getRelativeTimestamp(getContext(),
+            binding.lastModificationTimestamp.setText(DisplayUtils.getRelativeTimestamp(getContext(),
                                                                             file.getModificationTimestamp()));
         }
     }
 
     private void setFavoriteIconStatus(boolean isFavorite) {
         if (isFavorite) {
-            favoriteIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star, null));
+            binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(), R.drawable.ic_star, null));
         } else {
-            favoriteIcon.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
+            binding.favorite.setImageDrawable(ResourcesCompat.getDrawable(getResources(),
                                                                       R.drawable.ic_star_outline,
                                                                       null));
         }
@@ -604,7 +524,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
      * @return 'True' when the fragment is ready to show details of a file
      */
     private boolean readyToShow() {
-        return getFile() != null && user != null && layout == R.layout.file_details_fragment;
+        return getFile() != null && user != null;
     }
 
     /**
@@ -637,11 +557,14 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
                 if (ThumbnailsCacheManager.cancelPotentialThumbnailWork(getFile(), toolbarActivity.getPreviewImageView()) &&
                         containerActivity.getStorageManager() != null) {
                     final ThumbnailsCacheManager.ResizedImageGenerationTask task =
-                            new ThumbnailsCacheManager.ResizedImageGenerationTask(this,
-                                                                                  toolbarActivity.getPreviewImageView(),
-                                                                                  containerActivity.getStorageManager(),
-                                                                                  connectivityService,
-                                                                                  containerActivity.getStorageManager().getAccount());
+                        new ThumbnailsCacheManager.ResizedImageGenerationTask(this,
+                                                                              toolbarActivity.getPreviewImageView(),
+                                                                              toolbarActivity.getPreviewImageContainer(),
+                                                                              containerActivity.getStorageManager(),
+                                                                              connectivityService,
+                                                                              containerActivity.getStorageManager().getAccount(),
+                                                                              getResources().getColor(R.color.background_color_inverse)
+                        );
 
                     if (resizedImage == null) {
                         resizedImage = thumbnail;
@@ -670,17 +593,17 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private void setButtonsForTransferring() {
         if (!isEmpty()) {
             // show the progress bar for the transfer
-            downloadProgressContainer.setVisibility(View.VISIBLE);
-            progressText.setVisibility(View.VISIBLE);
+            binding.progressBlock.setVisibility(View.VISIBLE);
+            binding.progressText.setVisibility(View.VISIBLE);
             FileDownloaderBinder downloaderBinder = containerActivity.getFileDownloaderBinder();
             FileUploaderBinder uploaderBinder = containerActivity.getFileUploaderBinder();
             //if (getFile().isDownloading()) {
             if (downloaderBinder != null && downloaderBinder.isDownloading(user, getFile())) {
-                progressText.setText(R.string.downloader_download_in_progress_ticker);
+                binding.progressText.setText(R.string.downloader_download_in_progress_ticker);
             }
             else {
                 if (uploaderBinder != null && uploaderBinder.isUploading(user, getFile())) {
-                    progressText.setText(R.string.uploader_upload_in_progress_ticker);
+                    binding.progressText.setText(R.string.uploader_upload_in_progress_ticker);
                 }
             }
         }
@@ -692,7 +615,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private void setButtonsForDown() {
         if (!isEmpty()) {
             // hides the progress bar
-            downloadProgressContainer.setVisibility(View.GONE);
+            binding.progressBlock.setVisibility(View.GONE);
         }
     }
 
@@ -702,7 +625,7 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     private void setButtonsForRemote() {
         if (!isEmpty()) {
             // hides the progress bar
-            downloadProgressContainer.setVisibility(View.GONE);
+            binding.progressBlock.setVisibility(View.GONE);
         }
     }
 
@@ -735,16 +658,13 @@ public class FileDetailFragment extends FileFragment implements OnClickListener,
     }
 
     private void showEmptyContent() {
-        if (emptyContentContainer != null) {
-            emptyContentContainer.setVisibility(View.VISIBLE);
-            detailContainer.setVisibility(View.GONE);
+        binding.emptyList.emptyListView.setVisibility(View.VISIBLE);
+        binding.detailContainer.setVisibility(View.GONE);
 
-            emptyContentHeadline.setText(R.string.file_details_no_content);
+        binding.emptyList.emptyListViewHeadline.setText(R.string.file_details_no_content);
 
-            emptyContentProgressBar.setVisibility(View.GONE);
-            emptyContentIcon.setImageResource(R.drawable.ic_list_empty_error);
-            emptyContentIcon.setVisibility(View.VISIBLE);
-        }
+        binding.emptyList.emptyListIcon.setImageResource(R.drawable.ic_list_empty_error);
+        binding.emptyList.emptyListIcon.setVisibility(View.VISIBLE);
     }
 
     /**

@@ -57,7 +57,7 @@ import com.owncloud.android.ui.adapter.UserListItem;
 import com.owncloud.android.ui.dialog.AccountRemovalConfirmationDialog;
 import com.owncloud.android.ui.events.AccountRemovedEvent;
 import com.owncloud.android.ui.helpers.FileOperationsHelper;
-import com.owncloud.android.utils.ThemeUtils;
+import com.owncloud.android.utils.theme.ThemeToolbarUtils;
 
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -133,7 +133,7 @@ public class ManageAccountsActivity extends FileActivity implements UserListAdap
 
         // set title Action bar
         updateActionBarTitleAndHomeButtonByString(getResources().getString(R.string.prefs_manage_accounts));
-        ThemeUtils.tintBackButton(actionBar, this);
+        ThemeToolbarUtils.tintBackButton(actionBar, this);
 
         List<User> users = accountManager.getAllUsers();
         originalUsers = toAccountNames(users);
@@ -260,14 +260,13 @@ public class ManageAccountsActivity extends FileActivity implements UserListAdap
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         boolean retval = true;
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                onBackPressed();
-                break;
-            default:
-                retval = super.onOptionsItemSelected(item);
-                break;
+
+        if (item.getItemId() == android.R.id.home) {
+            onBackPressed();
+        } else {
+            retval = super.onOptionsItemSelected(item);
         }
+
         return retval;
     }
 
@@ -479,17 +478,16 @@ public class ManageAccountsActivity extends FileActivity implements UserListAdap
                 popup.getMenu().findItem(R.id.action_open_account).setVisible(false);
             }
             popup.setOnMenuItemClickListener(item -> {
-                switch (item.getItemId()) {
-                    case R.id.action_open_account:
-                        accountClicked(user.hashCode());
-                        break;
-                    case R.id.action_delete_account:
-                        openAccountRemovalConfirmationDialog(user, getSupportFragmentManager());
-                        break;
-                    default:
-                        openAccount(user);
-                        break;
+                int itemId = item.getItemId();
+
+                if (itemId == R.id.action_open_account) {
+                    accountClicked(user.hashCode());
+                } else if (itemId == R.id.action_delete_account) {
+                    openAccountRemovalConfirmationDialog(user, getSupportFragmentManager());
+                } else {
+                    openAccount(user);
                 }
+
                 return true;
             });
             popup.show();

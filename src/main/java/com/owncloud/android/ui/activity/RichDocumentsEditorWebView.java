@@ -24,7 +24,6 @@
 
 package com.owncloud.android.ui.activity;
 
-import android.annotation.SuppressLint;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
@@ -62,15 +61,11 @@ import java.lang.ref.WeakReference;
 import javax.inject.Inject;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import butterknife.ButterKnife;
-import butterknife.Unbinder;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 
 /**
  * Opens document for editing via Richdocuments app in a web view
  */
-@RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class RichDocumentsEditorWebView extends EditorWebView {
     public static final int REQUEST_LOCAL_FILE = 101;
     private static final int REQUEST_REMOTE_FILE = 100;
@@ -81,8 +76,6 @@ public class RichDocumentsEditorWebView extends EditorWebView {
     private static final String SLIDESHOW = "slideshow";
     private static final String NEW_NAME = "NewName";
 
-    private Unbinder unbinder;
-
     public ValueCallback<Uri[]> uploadMessage;
 
     @Inject
@@ -92,16 +85,13 @@ public class RichDocumentsEditorWebView extends EditorWebView {
     protected ClientFactory clientFactory;
 
     @SuppressFBWarnings("ANDROID_WEB_VIEW_JAVASCRIPT_INTERFACE")
-    @SuppressLint("AddJavascriptInterface") // suppress warning as webview is only used >= Lollipop
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void postOnCreate() {
+        super.postOnCreate();
 
-        unbinder = ButterKnife.bind(this);
+        getWebView().addJavascriptInterface(new RichDocumentsMobileInterface(), "RichDocumentsMobileInterface");
 
-        webview.addJavascriptInterface(new RichDocumentsMobileInterface(), "RichDocumentsMobileInterface");
-
-        webview.setWebChromeClient(new WebChromeClient() {
+        getWebView().setWebChromeClient(new WebChromeClient() {
             RichDocumentsEditorWebView activity = RichDocumentsEditorWebView.this;
 
             @Override
@@ -191,7 +181,7 @@ public class RichDocumentsEditorWebView extends EditorWebView {
             if (result.isSuccess()) {
                 String asset = (String) result.getSingleData();
 
-                runOnUiThread(() -> webview.evaluateJavascript("OCA.RichDocuments.documentsMain.postAsset('" +
+                runOnUiThread(() -> getWebView().evaluateJavascript("OCA.RichDocuments.documentsMain.postAsset('" +
                                                                    file.getFileName() + "', '" + asset + "');", null));
             } else {
                 runOnUiThread(() -> DisplayUtils.showSnackMessage(this, "Inserting image failed!"));
@@ -213,8 +203,7 @@ public class RichDocumentsEditorWebView extends EditorWebView {
 
     @Override
     protected void onDestroy() {
-        unbinder.unbind();
-        webview.destroy();
+        getWebView().destroy();
 
         super.onDestroy();
     }
@@ -223,15 +212,16 @@ public class RichDocumentsEditorWebView extends EditorWebView {
     protected void onResume() {
         super.onResume();
 
-        webview.evaluateJavascript("if (typeof OCA.RichDocuments.documentsMain.postGrabFocus !== 'undefined') " +
-                                       "{ OCA.RichDocuments.documentsMain.postGrabFocus(); }", null);
+        getWebView().evaluateJavascript("if (typeof OCA.RichDocuments.documentsMain.postGrabFocus !== 'undefined') " +
+                                            "{ OCA.RichDocuments.documentsMain.postGrabFocus(); }",
+                                        null);
     }
 
     private void printFile(Uri url) {
         OwnCloudAccount account = accountManager.getCurrentOwnCloudAccount();
 
         if (account == null) {
-            DisplayUtils.showSnackMessage(webview, getString(R.string.failed_to_print));
+            DisplayUtils.showSnackMessage(getWebView(), getString(R.string.failed_to_print));
             return;
         }
 
@@ -310,8 +300,8 @@ public class RichDocumentsEditorWebView extends EditorWebView {
         public void paste() {
             // Javascript cannot do this by itself, so help out.
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_PASTE));
-                webview.dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_PASTE));
+                getWebView().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_DOWN, KeyEvent.KEYCODE_PASTE));
+                getWebView().dispatchKeyEvent(new KeyEvent(KeyEvent.ACTION_UP, KeyEvent.KEYCODE_PASTE));
             }
         }
 

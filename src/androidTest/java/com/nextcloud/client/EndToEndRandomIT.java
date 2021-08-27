@@ -32,6 +32,7 @@ import com.owncloud.android.files.services.FileUploader;
 import com.owncloud.android.lib.common.accounts.AccountUtils;
 import com.owncloud.android.lib.common.operations.RemoteOperationResult;
 import com.owncloud.android.lib.common.utils.Log_OC;
+import com.owncloud.android.lib.ocs.responses.PrivateKey;
 import com.owncloud.android.lib.resources.e2ee.ToggleEncryptionRemoteOperation;
 import com.owncloud.android.lib.resources.files.ReadFileRemoteOperation;
 import com.owncloud.android.lib.resources.status.OCCapability;
@@ -56,7 +57,6 @@ import org.junit.Test;
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyPair;
-import java.security.PrivateKey;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -95,7 +95,9 @@ public class EndToEndRandomIT extends AbstractOnServerIT {
 
         if (capability.getVersion().equals(new OwnCloudVersion("0.0.0"))) {
             // fetch new one
-            assertTrue(new GetCapabilitiesOperation().execute(client, getStorageManager()).isSuccess());
+            assertTrue(new GetCapabilitiesOperation(getStorageManager())
+                           .execute(client)
+                           .isSuccess());
         }
         // tests only for NC19+
         assumeTrue(getStorageManager()
@@ -464,8 +466,9 @@ public class EndToEndRandomIT extends AbstractOnServerIT {
                                            false,
                                            account,
                                            false,
-                                           targetContext)
-                       .execute(client, getStorageManager())
+                                           targetContext,
+                                           getStorageManager())
+                       .execute(client)
                        .isSuccess());
     }
 
@@ -504,14 +507,14 @@ public class EndToEndRandomIT extends AbstractOnServerIT {
                                                     EncryptionUtils.PUBLIC_KEY,
                                                     publicKeyFromServer);
 
-        GetPrivateKeyOperation privateKeyOperation = new GetPrivateKeyOperation();
-        RemoteOperationResult privateKeyResult = privateKeyOperation.execute(account, targetContext);
+        RemoteOperationResult<PrivateKey> privateKeyResult = new GetPrivateKeyOperation().execute(account,
+                                                                                                  targetContext);
         assertTrue(privateKeyResult.isSuccess());
 
-        String privateKey = (String) privateKeyResult.getData().get(0);
+        PrivateKey privateKey = privateKeyResult.getResultData();
 
         String mnemonic = generateMnemonicString();
-        String decryptedPrivateKey = EncryptionUtils.decryptPrivateKey(privateKey, mnemonic);
+        String decryptedPrivateKey = EncryptionUtils.decryptPrivateKey(privateKey.getKey(), mnemonic);
 
         arbitraryDataProvider.storeOrUpdateKeyValue(account.name,
                                                     EncryptionUtils.PRIVATE_KEY, decryptedPrivateKey);
@@ -544,7 +547,7 @@ public class EndToEndRandomIT extends AbstractOnServerIT {
             throw new Exception("failed to send CSR", result.getException());
         }
 
-        PrivateKey privateKey = keyPair.getPrivate();
+        java.security.PrivateKey privateKey = keyPair.getPrivate();
         String privateKeyString = EncryptionUtils.encodeBytesToBase64String(privateKey.getEncoded());
         String privatePemKeyString = EncryptionUtils.privateKeyToPEM(privateKey);
         String encryptedPrivateKey = EncryptionUtils.encryptPrivateKey(privatePemKeyString,
@@ -614,8 +617,8 @@ public class EndToEndRandomIT extends AbstractOnServerIT {
                 Log_OC.d(this, "Remove file: " + child.getDecryptedRemotePath());
             }
 
-            assertTrue(new RemoveFileOperation(child, false, account, false, targetContext)
-                           .execute(client, getStorageManager())
+            assertTrue(new RemoveFileOperation(child, false, account, false, targetContext, getStorageManager())
+                           .execute(client)
                            .isSuccess()
                       );
         }

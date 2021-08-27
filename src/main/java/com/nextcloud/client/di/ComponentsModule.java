@@ -21,7 +21,7 @@
 package com.nextcloud.client.di;
 
 import com.nextcloud.client.etm.EtmActivity;
-import com.nextcloud.client.files.downloader.DownloaderService;
+import com.nextcloud.client.files.downloader.FileTransferService;
 import com.nextcloud.client.jobs.NotificationWork;
 import com.nextcloud.client.logger.ui.LogsActivity;
 import com.nextcloud.client.media.PlayerService;
@@ -74,9 +74,9 @@ import com.owncloud.android.ui.fragment.ExtendedListFragment;
 import com.owncloud.android.ui.fragment.FileDetailActivitiesFragment;
 import com.owncloud.android.ui.fragment.FileDetailFragment;
 import com.owncloud.android.ui.fragment.FileDetailSharingFragment;
+import com.owncloud.android.ui.fragment.GalleryFragment;
 import com.owncloud.android.ui.fragment.LocalFileListFragment;
 import com.owncloud.android.ui.fragment.OCFileListFragment;
-import com.owncloud.android.ui.fragment.PhotoFragment;
 import com.owncloud.android.ui.fragment.contactsbackup.ContactListFragment;
 import com.owncloud.android.ui.fragment.contactsbackup.ContactsBackupFragment;
 import com.owncloud.android.ui.preview.PreviewImageActivity;
@@ -181,7 +181,7 @@ abstract class ComponentsModule {
     abstract PreviewTextStringFragment previewTextStringFragment();
 
     @ContributesAndroidInjector
-    abstract PhotoFragment photoFragment();
+    abstract GalleryFragment photoFragment();
 
     @ContributesAndroidInjector
     abstract MultipleAccountsDialog multipleAccountsDialog();
@@ -207,5 +207,5 @@ abstract class ComponentsModule {
     @ContributesAndroidInjector abstract PlayerService playerService();
 
     @ContributesAndroidInjector
-    abstract DownloaderService fileDownloaderService();
+    abstract FileTransferService fileDownloaderService();
 }
