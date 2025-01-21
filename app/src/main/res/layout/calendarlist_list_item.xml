@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2021 Tobias Kaminsky <tobias@kaminsky.me>
+  ~ SPDX-FileCopyrightText: 2021 Nextcloud GmbH
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/contactlist_item_icon_layout_width"
+        android:layout_height="@dimen/contactlist_item_icon_layout_height"
+        android:layout_margin="@dimen/standard_margin"
+        android:contentDescription="@string/contactlist_item_icon"
+        android:scaleType="centerCrop"
+        android:src="@drawable/file_calendar"
+        app:srcCompat="@drawable/file_calendar"
+        tools:srcCompat="@drawable/file_calendar"
+        android:layout_gravity="center_vertical" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="start">
+
+        <CheckedTextView
+            android:id="@+id/name"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/standard_list_item_size"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:layout_weight="1"
+            android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+            android:ellipsize="marquee"
+            android:gravity="center_vertical|start"
+            android:maxLines="2"
+            android:paddingStart="8dp"
+            android:paddingEnd="0dp"
+            android:textAppearance="?android:attr/textAppearanceListItem" />
+
+        <Spinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/standard_list_item_size"
+            android:layout_weight="1"
+            android:visibility="gone"
+            android:gravity="start"
+            tools:visibility="visible" />
+
+    </LinearLayout>
+
+</LinearLayout>

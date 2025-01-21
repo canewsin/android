@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2017-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-FileCopyrightText: 2017-2018-2024 Tobias Kaminsky <tobias@kaminsky.me>
+# SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+
 cd scripts/screenshots/
 for i in $(find ../../fastlane | grep png | grep Screenshots) ; do
     device=$(echo $i | cut -d"/" -f8 | sed s'#Screenshots##')
@@ -66,9 +70,9 @@ for i in $(find ../../fastlane | grep png | grep Screenshots) ; do
             locale="-"$(echo $locale | cut -d"-" -f1)
     esac
 
-    if [ -e ../../src/main/res/values$locale/strings.xml ] ; then
-        heading=$(grep $textID"_heading" ../../src/main/res/values$locale/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
-        subline=$(grep $textID"_subline" ../../src/main/res/values$locale/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
+    if [ -e ../../app/src/main/res/values$locale/strings.xml ] ; then
+        heading=$(grep $textID"_heading" ../../app/src/main/res/values$locale/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
+        subline=$(grep $textID"_subline" ../../app/src/main/res/values$locale/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
     else
         heading=""
         subline=""
@@ -76,11 +80,11 @@ for i in $(find ../../fastlane | grep png | grep Screenshots) ; do
 
     # fallback to english if there is not translation
     if [ -z "$heading" ]; then
-        heading=$(grep $textID"_heading" ../../src/main/res/values/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
+        heading=$(grep $textID"_heading" ../../app/src/main/res/values/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
     fi
 
     if [ -z "$subline" ]; then
-        subline=$(grep $textID"_subline" ../../src/main/res/values/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
+        subline=$(grep $textID"_subline" ../../app/src/main/res/values/strings.xml | cut -d">" -f2 | cut -d"<" -f1 | sed s'#\&amp;#\\&#')
     fi
 
 

@@ -1,24 +1,8 @@
 #!/bin/bash
 #
-# Nextcloud Android client application
-#
-# @author Tobias Kaminsky
-# Copyright (C) 2021 Tobias Kaminsky
-# Copyright (C) 2021 Nextcloud GmbH
-#  
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU Affero General Public License as published by
-# the Free Software Foundation, either version 3 of the License, or
-# (at your option) any later version.
-#  
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-# GNU Affero General Public License for more details.
-#  
-# You should have received a copy of the GNU Affero General Public License
-# along with this program. If not, see <https://www.gnu.org/licenses/>.
-#
+# SPDX-FileCopyrightText: 2021-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-FileCopyrightText: 2021 Tobias Kaminsky <tobias@kaminsky.me>
+# SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 
 error=0
 total=0
@@ -42,7 +26,7 @@ echo "</tr>"
 
 #for image in ./build/reports/shot/verification/images/*.png ; do
 for image in $(/bin/ls -1 ./screenshots/gplay/debug/*.png | grep -v _dark_ | grep -v _light_) ; do
-    cp $image build/screenshotSummary/images/
+    cp $image app/build/screenshotSummary/images/
     
     echo "<tr style='height:200px'>"
     echo "<td><a target='_blank' href=\"images/$(basename $image)\"><img width=100px src=\"images/$(basename $image)\"/></a></td>"
@@ -61,12 +45,12 @@ for image in $(/bin/ls -1 ./screenshots/gplay/debug/*.png | grep -v _dark_ | gre
         fi
         
         # if image does not exist
-        if [ ! -e ./build/reports/shot/verification/images/$name ]; then
+        if [ ! -e ./app/build/reports/shot/verification/images/$name ]; then
             echo "<span style='color: red'>✘</span>"
             error=$((error + 1))
-        elif [ -e ./build/reports/shot/verification/images/diff_$name ]; then
+        elif [ -e ./app/build/reports/shot/verification/images/diff_$name ]; then
             # file with "diff_" prefix
-            cp ./build/reports/shot/verification/images/diff_$name build/screenshotSummary/images/
+            cp ./app/build/reports/shot/verification/images/diff_$name build/screenshotSummary/images/
             echo "<a target='_blank' href=\"images/diff_$name\"><img width=100px src=\"images/diff_$name\"/></a>"
             error=$((error + 1))
         else 

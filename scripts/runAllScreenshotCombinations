@@ -1,11 +1,15 @@
 #!/bin/bash
 
+# SPDX-FileCopyrightText: 2020-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-FileCopyrightText: 2020 Tobias Kaminsky <tobias@kaminsky.me>
+# SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+
 ## $1 noCI/stable/master: wether to run deleteOldComments.sh or uploadReport.sh
 ## $2 true/false: record or verify screenshots
 ## $3 classMethod: piped from androidScreenshotTest
 ## $4 github event number
 
-sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g src/main/res/values/setup.xml
+sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g app/src/main/res/values/setup.xml
 
 if [[ $2 = "true" ]]; then
     record="-Precord"
@@ -42,12 +46,12 @@ do
         -Pandroid.testInstrumentationRunnerArguments.annotation=com.owncloud.android.utils.ScreenshotTest \
         -Pandroid.testInstrumentationRunnerArguments.COLOR="$color" \
         -Pandroid.testInstrumentationRunnerArguments.DARKMODE="$darkMode" </dev/null > /dev/null \
-        && scripts/deleteOldComments.sh "$1-$darkMode-$color" "Screenshot" "$4" "$GIT_TOKEN" \
+        && scripts/deleteOldComments.sh "$1-$darkMode-$color" "Screenshot" "$4" \
         || resultCode=1 && scripts/uploadReport.sh "$LOG_USERNAME" "$LOG_PASSWORD" "$4" \
-        "$1-$darkMode-$color" "Screenshot" "$4" "$GIT_TOKEN"
+        "$1-$darkMode-$color" "Screenshot" "$4"
     fi
 done
 
-sed -i s'#<bool name="is_beta">true</bool>#<bool name="is_beta">false</bool>#'g src/main/res/values/setup.xml
+sed -i s'#<bool name="is_beta">true</bool>#<bool name="is_beta">false</bool>#'g app/src/main/res/values/setup.xml
 
 exit $resultCode

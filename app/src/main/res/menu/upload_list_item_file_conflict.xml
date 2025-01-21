@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2019 Alice Gaudon <alice@gaudon.pro>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_upload_list_resolve_conflict"
+        android:icon="@drawable/ic_history"
+        android:title="@string/upload_list_resolve_conflict" />
+
+    <item
+        android:id="@+id/action_upload_list_delete"
+        android:title="@string/upload_list_delete"
+        android:icon="@drawable/nav_trashbin" />
+</menu>

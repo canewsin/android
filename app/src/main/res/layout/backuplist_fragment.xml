@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2017 Tobias Kaminsky <tobias@kaminsky.me>
+  ~ SPDX-FileCopyrightText: 2017 Nextcloud GmbH
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:animateLayoutChanges="true">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:choiceMode="multipleChoice"
+        android:scrollbarStyle="outsideOverlay"
+        android:scrollbars="vertical"
+        android:layout_above="@+id/contactlist_restore_selected_container" />
+
+    <LinearLayout
+        android:id="@+id/contactlist_restore_selected_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_default"
+        android:orientation="vertical"
+        android:visibility="gone"
+        tools:visibility="visible"
+        android:layout_alignParentBottom="true">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/list_divider_background"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/restore_selected"
+            style="@style/Button.Borderless"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/standard_margin"
+            android:layout_marginEnd="@dimen/standard_margin"
+            android:minHeight="@dimen/minimum_size_for_touchable_area"
+            android:text="@string/restore_selected" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/loading_list_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+
+        <include layout="@layout/contactlist_list_item_shimmer" />
+    </LinearLayout>
+</RelativeLayout>

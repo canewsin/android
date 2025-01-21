@@ -1,8 +1,8 @@
+<!--
+ ~ SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
+ ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
 # [Nextcloud](https://nextcloud.com) Android app
-
-[![irc](https://img.shields.io/badge/IRC-%23nextcloud%20on%20freenode-orange.svg)](https://webchat.freenode.net/?channels=nextcloud)
-[![irc](https://img.shields.io/badge/IRC-%23nextcloud--mobile%20on%20freenode-blue.svg)](https://webchat.freenode.net/?channels=nextcloud-mobile)
-
 
 # Index
 1. [Guidelines](#guidelines)
@@ -16,6 +16,7 @@
         1. [Branching model](#branching-model)
         1. [Android Studio formatter setup](#android-studio-formatter-setup)
         1. [Build variants](#build-variants)
+        1. [Git hooks](#git-hooks)
     1. [Contribution process](#contribution-process)
         1. [Fork and download android repository](#fork-and-download-android-repository)
         1. [Create pull request](#create-pull-request)
@@ -137,11 +138,10 @@ To install them, just run:
 
 
 ### Create pull request:
-* Commit your changes locally: ```git commit -a```
+* Commit your changes locally. Remember to sign off your commits (`git commit -sm 'Your commit message'`).
 * Push your changes to your GitHub repo: ```git push```
 * Browse to <https://github.com/YOURGITHUBNAME/android/pulls> and issue pull request
 * Enter description and send pull request.
-
 
 ### Create another pull request:
 To make sure your new pull request does not contain commits which are already contained in previous PRs, create a new branch which is a clone of upstream/master.
@@ -177,79 +177,31 @@ Copyright of Nextcloud GmbH is optional.
 
 Source code of library:
 ```java
- /* Nextcloud Android Library is available under MIT license
+/*
+ * Nextcloud Android Library
  *
- *   @author Your Name
- *   Copyright (C) 2019 Your Name
- *   Copyright (C) 2019 Nextcloud GmbH
- *   
- *   Permission is hereby granted, free of charge, to any person obtaining a copy
- *   of this software and associated documentation files (the "Software"), to deal
- *   in the Software without restriction, including without limitation the rights
- *   to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- *   copies of the Software, and to permit persons to whom the Software is
- *   furnished to do so, subject to the following conditions:
- *   
- *   The above copyright notice and this permission notice shall be included in
- *   all copies or substantial portions of the Software.
- *   
- *   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, 
- *   EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- *   MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND 
- *   NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS 
- *   BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN 
- *   ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN 
- *   CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- *   THE SOFTWARE.
- *
+ * SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+ * SPDX-License-Identifier: MIT
  */
  ```
 
 Source code of app:
 ```java
 /*
- * Nextcloud Android client application
+ * Nextcloud - Android Client
  *
- * @author Your Name
- * Copyright (C) 2019 Your Name
- * Copyright (C) 2019 Nextcloud GmbH
- *
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ * SPDX-FileCopyrightText: 2024 Your Name <your@email.com>
+ * SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
  */
  ```
  
  XML (layout) file:
  ```xml
 <!--
-  Nextcloud Android client application
-
-  @author Your Name
-  Copyright (C) 2019 Your Name
-  Copyright (C) 2019 Nextcloud GmbH
- 
-  This program is free software: you can redistribute it and/or modify
-  it under the terms of the GNU Affero General Public License as published by
-  the Free Software Foundation, either version 3 of the License, or
-  (at your option) any later version.
- 
-  This program is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-  GNU Affero General Public License for more details.
- 
-  You should have received a copy of the GNU Affero General Public License
-  along with this program. If not, see <https://www.gnu.org/licenses/>.
+  ~ Nextcloud - Android Client
+  ~ 
+  ~ SPDX-FileCopyrightText: 2024 Your name <your@email.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 -->
 ```
 
@@ -301,7 +253,7 @@ We use [shot](https://github.com/Karumi/Shot) for taking screenshots and compare
      Screenshot.snapActivity(activity).record();
     ```
 
-    - best practise is to first create test with emulator too see behaviour and then create screenshots
+    - best practice is to first create test with emulator too see behaviour and then create screenshots
 
 ## File naming
 
@@ -323,11 +275,11 @@ A good practice is to not include the word `menu` as part of the name because th
 
 ## Translations
 
-We manage translations via [Transifex](https://www.transifex.com/nextcloud/nextcloud/android/). So just request joining the translation team for Android on the site and start translating. All translations will then be automatically pushed to this repository, there is no need for any pull request for translations.
+We manage translations via [Transifex](https://app.transifex.com/nextcloud/nextcloud/android/). So just request joining the translation team for Android on the site and start translating. All translations will then be automatically pushed to this repository, there is no need for any pull request for translations.
 
 If you need to change a translation, do not change it, but give it new key. This way the translation stays backward compatible as we automatically backport translated strings to last versions.
 
-When submitting PRs with changed translations, please only submit changes to values/strings.xml and not changes to translated files. These will be overwritten by next merge of transifex-but and increase PR review.  
+When submitting PRs with changed translations, please only submit changes to values/strings.xml and not changes to translated files. These will be overwritten by next merge of transifex-bot and increase PR review.  
 
 ## Engineering practices
 
@@ -411,6 +363,22 @@ and thereof we'd ask contributors to be mindful of their code testability:
    should at least not make future efforts more challenging
 3. whenever possible, testability should be improved even if the code is not covered by tests
 
+### Performance
+
+If you're interested in improving the app's performance, please check the [official documentation](https://developer.android.com/topic/performance)
+for ways you can inspect and improve performance.
+
+For additional analysis, set the `perfAnalysis` property
+in your Gradle build:
+
+```shell
+./gradlew installGplayDebug -P perfAnalysis
+```
+
+This will install the app with [LeakCanary](https://square.github.io/leakcanary/) and 
+[StrictMode](https://developer.android.com/reference/android/os/StrictMode) enabled and configured.
+These tools can help find memory leaks, foreground operations that should be in background, and other performance
+problems.
 
 # Releases
 At the moment we are releasing the app in two app stores:
