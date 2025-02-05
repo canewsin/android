@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2015 ownCloud Inc.
+  ~ SPDX-FileCopyrightText: 2012 Bartosz Przybylski
+  ~ SPDX-License-Identifier: GPL-2.0-only
+-->
+<!-- The attributes in this XML file provide configuration information -->
+<!-- for the SyncAdapter. -->
+<sync-adapter xmlns:android="http://schemas.android.com/apk/res/android"
+    android:contentAuthority="@string/authority"
+    android:accountType="@string/account_type"
+    android:supportsUploading="true"
+    android:userVisible="true"
+    android:allowParallelSyncs="true"
+    android:isAlwaysSyncable="true"
+/>

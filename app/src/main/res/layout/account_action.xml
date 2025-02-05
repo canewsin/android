@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2020 Thore Goebel <goebel.thore@gmail.com>
+  ~ SPDX-FileCopyrightText: 2016 Andy Scherzinger <info@andy-scherzinger.de>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<com.google.android.material.button.MaterialButton xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    style="@style/Nextcloud.Material.TextButton"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/account_action_layout_height"
+    android:layout_margin="@dimen/standard_quarter_margin"
+    android:paddingStart="20dp"
+    android:paddingEnd="8dp"
+    android:text="@string/prefs_add_account"
+    android:textAlignment="textStart"
+    android:textAllCaps="false"
+    android:textColor="@color/fontAppbar"
+    app:icon="@drawable/ic_account_plus"
+    app:iconGravity="start"
+    app:iconPadding="22dp"
+    app:iconTint="@color/fontAppbar" />

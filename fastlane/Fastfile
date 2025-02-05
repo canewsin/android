@@ -1,3 +1,15 @@
+# SPDX-FileCopyrightText: 2017-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+
+# run fastlane
+# bundle exec fastlane 
+
+# update fastlane
+# bundle update fastlane
+
+# update plugins
+# bundle exec fastlane update_plugins
+
 # This is the minimum version number required.
 fastlane_version "2.58.0"
 
@@ -47,7 +59,9 @@ end
 
 desc "Release phase 2 for RC: checks, tag, upload gplay to playstore with values from build.gradle"
 lane :RC_releasePhase2 do |options|
+    checkReleaseRequirements_RC()
     info = androidVersion
+    promptVersion(info)
     checkChangelog(info)
     checkLibrary_RC()
     checkIfScreenshotsExist()
@@ -66,49 +80,60 @@ end
 
 desc "Release phase 2 for FINAL: checks, tag, upload gplay to playstore with values from build.gradle"
 lane :Final_releasePhase2 do |options|
+    checkReleaseRequirements_Final()
     info = androidVersion
+    promptVersion(info)
     checkChangelog(info)
     checkLibrary_Final()
     checkIfScreenshotsExist()
     checkIfAPKexists()
     tag(info)
     uploadToPlaystore_Final(info)
-    uploadToHuawei_Final(info)
     createGithubRelease_Final(info)
     fdroidMergeRequest_Final(info)
     createChangelogPullRequest_Final(info)
+    uploadToHuawei_Final(info)
 end
 
 desc "Makes gplay and generic releases in ../releases/"
 lane :makeReleases do
-    sh("mkdir -p ../release")
-    sh("rm -rf ../release/*")
-    sh("rm -rf ../build")
+    info = androidVersion
+    sh("rm -rf ../release/ && mkdir -p ../release")
+    gradle(task: 'clean')
 
-    SignedRelease(flavor:"Generic")
-    sh("mv ../build/outputs/apk/generic/release/*.apk ../release/")
-    sh("rename 'generic-release' 'nextcloud' ../release/generic-release*")
+    createGenericRelease(versionCode:info["versionCode"])
 
-    SignedRelease(flavor:"Gplay")
-    sh("cp ../build/outputs/apk/gplay/release/*.apk ../release/")
+    createGplayRelease(versionCode:info["versionCode"])
+    
+    createHuaweiRelease()
 end
 
 desc "Create GPlay release"
 lane :createGplayRelease do |options|
-    SignedRelease(flavor:"Gplay")
-    sh("mv ../build/outputs/apk/gplay/release/*.apk ../release/")
+    buildBundle(flavor:"Gplay")
+    sh("mv ../app/build/outputs/bundle/gplayRelease/app-gplay-release.aab ../release/")
+    buildApkFromBundle(outputDir: "../release", bundlePath: "../release/app-gplay-release.aab")
+    sh("rm ../release/toc.pb")
+    sh("mv ../release/universal.apk ../release/gplay-release-#{options[:versionCode]}.apk")
 end
 
 desc "Create Generic release"
 lane :createGenericRelease do |options|
     SignedRelease(flavor:"Generic")
-    sh("mv ../build/outputs/apk/generic/release/*.apk ../release/")
+    sh("mv ../app/build/outputs/apk/generic/release/*.apk ../release/")
+    sh("mv ../release/generic-release-#{options[:versionCode]}.apk ../release/nextcloud-#{options[:versionCode]}.apk")
+end
+
+desc "Create Huawei release"
+lane :createHuaweiRelease do
+    SignedRelease(flavor:"Huawei")
+    sh("mv ../app/build/outputs/apk/huawei/release/*.apk ../release/")
 end
 
 desc "Create Dev release"
-lane :createDevRelease do |options|
+lane :createDevRelease do
     SignedRelease(flavor:"VersionDev")
-    sh("mv ../build/outputs/apk/versionDev/release/*.apk ../release/")
+    sh("mv ../app/build/outputs/apk/versionDev/release/*.apk ../release/")
 end
 
 desc "Beautify phone for screenshots: set time, remove other icons, no charging"
@@ -128,8 +153,9 @@ private_lane :uploadToHuawei_Final do |options|
         client_id: ENV["FASTLANE_NEXTCLOUD_HUAWEI_CLIENT_ID"],
         client_secret: ENV["FASTLANE_NEXTCLOUD_HUAWEI_CLIENT_SECRET"],
         app_id: ENV["FASTLANE_NEXTCLOUD_HUAWEI_APP_ID"],
-        apk_path: "release/nextcloud-" + options["versionCode"] + ".apk",
+        apk_path: "release/huawei-release-" + options["versionCode"] + ".apk",
         submit_for_review: true,
+        delay_before_submit_for_review: 30,
     )
 end
 
@@ -152,6 +178,23 @@ private_lane :build_for_screengrab do
     TEST_APK_LOCATION = lane_context[SharedValues::GRADLE_ALL_APK_OUTPUT_PATHS].select{ |i| i[/androidTest/] }[0]
 end
 
+private_lane :checkReleaseRequirements_common do
+    sh("if ! command -v fdroid &>/dev/null; then echo 'fdroid command not found' && exit 1; fi")
+    sh("if ! command -v bundletool &>/dev/null; then echo 'bundletool command not found' && exit 1; fi")
+end
+
+private_lane :checkReleaseRequirements_RC do
+    checkReleaseRequirements_common()
+    sh("if ! command -v fdroidMergeRequestRC &>/dev/null; then echo 'fdroidMergeRequestRC command not found'; exit 1; fi")
+    sh("if ! command -v createChangelogPullRequestRC &>/dev/null; then echo 'createChangelogPullRequestRC command not found'; exit 1; fi")
+end
+
+private_lane :checkReleaseRequirements_Final do
+    checkReleaseRequirements_common()
+    sh("if ! command -v fdroidMergeRequestFinal &>/dev/null; then echo 'fdroidMergeRequestFinal command not found'; exit 1; fi")
+    sh("if ! command -v createChangelogPullRequestFinal &>/dev/null; then echo 'createChangelogPullRequestFinal command not found'; exit 1; fi")
+end
+
 private_lane :createChangelogPullRequest_RC do |options|
     sh("createChangelogPullRequestRC " +  options["tag"] + " \"" + options["versionName"] + "\" " + options["versionCode"] + " \"" + options["branch"] + "\" ")
 end
@@ -161,13 +204,13 @@ private_lane :createChangelogPullRequest_Final do |options|
 end
 
 private_lane :checkIfAPKexists do |options|
-    sh("if [ $(/bin/ls -1 ../release | wc -l) -ne 2 ]; then echo 'APKs do not exist ../release/; aborting!' ; exit 1 ;
+    sh("if [ $(/bin/ls -1 ../release | wc -l) -ne 4 ]; then echo 'Release artifacts not present or wrong number present; aborting!' ; exit 1 ;
      fi")
 end
 
 desc "compute version"
-private_lane :androidVersion do |options|
-    File.open("../build.gradle","r") do |f|
+private_lane :androidVersion do
+    File.open("../app/build.gradle","r") do |f|
         text = f.read
 
         # everything between Document and Authors
@@ -197,19 +240,22 @@ private_lane :androidVersion do |options|
             branch = "stable-" + major[1] + "." + minor[1]
         end
 
-        print "VersionCode: " + versionCode.to_s + "\n"
-        print "Name: " + name + "\n"
-        print "Tag: " + tag + "\n"
-        print "Branch: " + branch + "\n"
-        print "\ndisable IPv6 to upload to Gplay!!!\n"
-
-        answer = prompt(text: "is this okay?", boolean: true)
-
-        if !answer
-            exit
-        end
-
         { "versionCode" => versionCode.to_s, "versionName" => name, "tag" => tag, "branch" => branch }
+    end
+end
+
+desc "Show versions and prompt for confirmation"
+private_lane :promptVersion do |options|
+    print "VersionCode: " + options["versionCode"].to_s + "\n"
+    print "Name: " + options["versionName"] + "\n"
+    print "Tag: " + options["tag"] + "\n"
+    print "Branch: " + options["branch"] + "\n"
+    print "\ndisable IPv6 to upload to Gplay!!!\n"
+
+    answer = prompt(text: "is this okay?", boolean: true)
+
+    if !answer
+        exit
     end
 end
 
@@ -225,7 +271,7 @@ end
 
 desc "check if screenshots exists and exit"
 private_lane :checkIfScreenshotsExist do
-    sh(" if [ -e  metadata/android/*/images ] ; then echo 'Screenshots in fastlane folder exist; aborting!' ; exit 1 ; fi")
+    sh(" if [ $(find metadata/android/*/images -type f -not -name icon.png  | grep -c . ) -gt 0 ] ; then echo 'Screenshots in fastlane folder exist; aborting!' ; exit 1 ; fi")
 end
 
 private_lane :tag do |options|
@@ -238,19 +284,19 @@ private_lane :tag do |options|
 end
 
 private_lane :disableLogger do
-    sh("sed -i s'#<bool name=\"logger_enabled\">false</bool>#<bool name=\"logger_enabled\">true</bool>#' ../src/main/res/values/setup.xml")
+    sh("sed -i s'#<bool name=\"logger_enabled\">false</bool>#<bool name=\"logger_enabled\">true</bool>#' ../app/src/main/res/values/setup.xml")
 end
 
 private_lane :enableLogger do
-    sh("sed -i s'#<bool name=\"logger_enabled\">true</bool>#<bool name=\"logger_enabled\">false</bool>#' ../src/main/res/values/setup.xml")
+    sh("sed -i s'#<bool name=\"logger_enabled\">true</bool>#<bool name=\"logger_enabled\">false</bool>#' ../app/src/main/res/values/setup.xml")
 end
 
-desc "Upload to play store"
+desc "Upload to play store (beta)"
 private_lane :uploadToPlaystore_RC do |options|
     upload_to_play_store(
         skip_upload_images: true,
         track: 'beta',
-        apk: "release/gplay-release-" + options["versionCode"] + ".apk"
+        aab: "release/app-gplay-release.aab"
     )
 end
 
@@ -258,10 +304,40 @@ desc "Upload to play store"
 private_lane :uploadToPlaystore_Final do |options|
     upload_to_play_store(
         skip_upload_images: true,
-        apk: "release/gplay-release-" + options["versionCode"] + ".apk"
+        skip_upload_apk: true,
+        aab: "release/app-gplay-release.aab"
     )
 end
 
+
+desc "Build app bundle"
+private_lane :buildBundle do |options|
+    gradle(
+        task: 'bundle',
+        flavor: options[:flavor],
+        build_type: 'Release',
+        print_command: false,
+        properties: {
+              "android.injected.signing.store.file" => ENV["FASTLANE_NEXTCLOUD_UPLOAD_STORE_FILE"],
+              "android.injected.signing.store.password" => ENV["FASTLANE_NEXTCLOUD_UPLOAD_STORE_PASSWORD"],
+              "android.injected.signing.key.alias" => ENV["FASTLANE_NEXTCLOUD_UPLOAD_KEY_ALIAS"],
+              "android.injected.signing.key.password" => ENV["FASTLANE_NEXTCLOUD_UPLOAD_KEY_PASSWORD"],
+            }
+        )
+end
+
+desc "Generate signed universal APK from app bundle"
+private_lane :buildApkFromBundle do |options|
+    sh(command:"bundletool build-apks --mode universal --output '#{options[:outputDir]}' --output-format DIRECTORY" +
+        " --ks '#{ENV["FASTLANE_NEXTCLOUD_STORE_FILE"]}'"+
+        " --ks-pass 'pass:#{ENV["FASTLANE_NEXTCLOUD_STORE_PASSWORD"]}'"+
+        " --ks-key-alias '#{ENV["FASTLANE_NEXTCLOUD_KEY_ALIAS"]}'"+
+        " --key-pass 'pass:#{ENV["FASTLANE_NEXTCLOUD_KEY_PASSWORD"]}'"+
+        " --bundle '#{options[:bundlePath]}'",
+        log:false)
+end
+
+desc "Build signed APK"
 private_lane :SignedRelease do |options|
     gradle(
         task: 'assemble',

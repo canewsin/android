@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2020 Chris Narkiewicz <hello@ezaquarii.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:stretchColumns="1">
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/etm_background_job_uuid" />
+
+        <TextView
+            android:id="@+id/etm_background_job_uuid"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="d7edb387-0b61-4e4e-a728-ffab3055d700" />
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/etm_background_job_name"
+            app:layout_constraintStart_toStartOf="@+id/etm_background_task_id_label"
+            app:layout_constraintTop_toBottomOf="@+id/etm_background_task_id_label" />
+
+        <TextView
+            android:id="@+id/etm_background_job_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="job name" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/etm_background_job_user" />
+
+        <TextView
+            android:id="@+id/etm_background_job_user"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="user@nextcloud.com" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/etm_background_job_state" />
+
+        <TextView
+            android:id="@+id/etm_background_job_state"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="ENQUEUED" />
+
+    </TableRow>
+
+    <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/etm_background_job_created" />
+
+        <TextView
+            android:id="@+id/etm_background_job_started"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="2020-02-15T20:53:15Z" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/etm_background_job_progress_row"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/etm_background_job_progress" />
+
+        <TextView
+            android:id="@+id/etm_background_job_progress"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="50%" />
+
+    </TableRow>
+
+    <TableRow
+        android:id="@+id/etm_background_execution_times_row"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="visible">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
+            android:text="@string/etm_background_execution_count" />
+
+        <TextView
+            android:id="@+id/etm_background_execution_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="0" />
+
+    </TableRow>
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TableRow
+            android:id="@+id/etm_background_execution_logs_row"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fadeScrollbars="false"
+            android:scrollbars="horizontal"
+            android:scrollHorizontally="true">
+
+
+                <TextView
+                    android:id="@+id/etm_background_execution_logs"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_span="2" />
+
+
+        </TableRow>
+    </HorizontalScrollView>
+
+
+</TableLayout>

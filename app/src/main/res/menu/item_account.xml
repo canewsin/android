@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2020 Kilian Périsset <kilian.perisset@infomaniak.com>
+  ~ SPDX-FileCopyrightText: 2020 Infomaniak
+  ~ SPDX-FileCopyrightText: 2020 Nextcloud GmbH
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto"
+      xmlns:tools="http://schemas.android.com/tools"
+      tools:ignore="AppCompatResource">
+
+    <item
+        android:id="@+id/action_open_account"
+        android:title="@string/common_switch_to_account"
+        app:showAsAction="never"
+        android:showAsAction="never" />
+
+    <item
+        android:id="@+id/action_delete_account"
+        android:title="@string/delete_account"
+        app:showAsAction="never"
+        android:showAsAction="never" />
+</menu>

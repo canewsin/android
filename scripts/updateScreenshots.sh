@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+# SPDX-FileCopyrightText: 2019-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-FileCopyrightText: 2019-2020 Tobias Kaminsky <tobias@kaminsky.me>
+# SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+
 if [[ $(grep NC_TEST_SERVER_BASEURL ~/.gradle/gradle.properties   | grep -v "#" -c) -gt 0 ]]; then
     echo "This will not use server in docker. Please comment in .gradle/gradle.properties. Aborting!"
     exit 1
@@ -70,7 +74,7 @@ adb shell "mount -o remount,rw /system"
 sleep 2
 adb shell "echo $IP server >> /system/etc/hosts"
 
-sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g src/main/res/values/setup.xml
+sed -i s'#<bool name="is_beta">false</bool>#<bool name="is_beta">true</bool>#'g app/src/main/res/values/setup.xml
 
 ## update/create all screenshots
 #./gradlew gplayDebugExecuteScreenshotTests -Precord \
@@ -100,7 +104,7 @@ resultCode=$?
 ((retryCount++))
 done
 
-sed -i s'#<bool name="is_beta">true</bool>#<bool name="is_beta">false</bool>#'g src/main/res/values/setup.xml
+sed -i s'#<bool name="is_beta">true</bool>#<bool name="is_beta">false</bool>#'g app/src/main/res/values/setup.xml
 
 if [ "$1" == "debug" ]; then
   exit

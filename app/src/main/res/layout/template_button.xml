@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2024 Alper Ozturk <alper.ozturk@nextcloud.com>
+  ~ SPDX-FileCopyrightText: 2021 Andy Scherzinger <info@andy-scherzinger>
+  ~ SPDX-FileCopyrightText: 2018 Tobias Kaminsky <tobias@kaminsky.me>
+  ~ SPDX-FileCopyrightText: 2018 Nextcloud GmbH
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<LinearLayout
+    android:id="@+id/template_layout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:clickable="true"
+    android:focusable="true"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/rounded_rect_8dp"
+    android:backgroundTint="@color/grey_200"
+    android:orientation="vertical"
+    android:layout_marginEnd="@dimen/standard_margin"
+    android:layout_marginBottom="@dimen/standard_margin"
+    android:paddingTop="@dimen/standard_padding">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/template_container"
+        android:checkable="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:strokeColor="@color/card_border_selector"
+        app:strokeWidth="2dp">
+
+        <ImageView
+            android:id="@+id/template"
+            android:layout_width="60dp"
+            android:layout_height="84dp"
+            android:layout_margin="@dimen/standard_margin"
+            android:contentDescription="@string/thumbnail"
+            android:src="@drawable/file_doc" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <TextView
+        android:id="@+id/template_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:ellipsize="middle"
+        android:gravity="center_horizontal"
+        android:paddingTop="@dimen/standard_half_padding"
+        android:textColor="@color/text_color"
+        tools:text="Template" />
+</LinearLayout>

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2023 TSI-mc
+  ~ SPDX-FileCopyrightText: 2018 Tobias Kaminsky <tobias@kaminsky.me>
+  ~ SPDX-FileCopyrightText: 2018 Nextcloud
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/upload_list_item_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:baselineAligned="false"
+    android:orientation="horizontal"
+    android:paddingBottom="@dimen/standard_half_padding"
+    android:paddingTop="@dimen/standard_half_padding">
+
+    <FrameLayout
+        android:layout_width="@dimen/upload_list_item_frame_layout_width"
+        android:layout_height="@dimen/standard_list_item_size"
+        android:focusable="false"
+        android:focusableInTouchMode="false">
+
+        <ImageView
+            android:id="@+id/thumbnail"
+            android:layout_width="@dimen/file_icon_size"
+            android:layout_height="@dimen/file_icon_size"
+            android:layout_gravity="center"
+            android:contentDescription="@null"
+            android:src="@drawable/folder" />
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:layout_weight="1"
+        android:gravity="center_vertical"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/upload_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="@string/placeholder_filename"
+            android:textColor="@color/text_color"
+            android:textSize="@dimen/two_line_primary_text_size" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:id="@+id/upload_file_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="middle"
+                android:gravity="start"
+                android:singleLine="true"
+                android:text="@string/placeholder_fileSize"
+                android:textColor="@color/list_item_lastmod_and_filesize_text"
+                android:textSize="@dimen/upload_list_item_text_size" />
+
+            <TextView
+                android:id="@+id/upload_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/standard_quarter_margin"
+                android:layout_marginStart="@dimen/standard_quarter_margin"
+                android:text="@string/placeholder_timestamp"
+                android:textColor="@color/list_item_lastmod_and_filesize_text"
+                android:textSize="@dimen/upload_list_item_text_size" />
+
+            <TextView
+                android:id="@+id/upload_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/uploads_view_upload_status_succeeded"
+                android:textColor="@color/list_item_lastmod_and_filesize_text"
+                android:textSize="@dimen/upload_list_item_text_size" />
+
+        </LinearLayout>
+
+        <ProgressBar
+            android:id="@+id/upload_progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <TextView
+            android:id="@+id/upload_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textColor="@color/list_item_lastmod_and_filesize_text"
+            android:textSize="@dimen/upload_list_item_text_size" />
+
+        <TextView
+            android:id="@+id/upload_remote_path"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="middle"
+            android:singleLine="true"
+            android:text="@string/instant_upload_path"
+            android:textColor="@color/list_item_lastmod_and_filesize_text"
+            android:textSize="@dimen/upload_list_item_text_size" />
+
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/upload_right_button"
+        tools:src="@drawable/ic_action_cancel_grey"
+        android:layout_width="@dimen/min_list_item_size"
+        android:layout_height="@dimen/standard_list_item_size"
+        android:layout_gravity="center|end"
+        android:background="@android:color/transparent"
+        android:contentDescription="@string/upload_item_action_button"
+        android:paddingStart="@dimen/standard_double_padding"
+        android:paddingEnd="@dimen/zero" />
+
+</LinearLayout>

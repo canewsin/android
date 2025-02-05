@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2019-2024 Nextcloud GmbH and Nextcloud contributors
+  ~ SPDX-FileCopyrightText: 2012 Bartosz Przybylski <bart.p.pl@gmail.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<account-authenticator xmlns:android="http://schemas.android.com/apk/res/android"
+                       android:accountType="@string/account_type"
+                       android:icon="@mipmap/ic_launcher"
+                       android:label="@string/app_name"
+                       android:smallIcon="@mipmap/ic_launcher">
+</account-authenticator>

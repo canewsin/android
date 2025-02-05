@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2017 Tobias Kaminsky <tobias@kaminsky.me>
+  ~ SPDX-FileCopyrightText: 2017 Nextcloud GmbH
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="@dimen/standard_list_item_size">
+
+    <ImageView
+        android:id="@+id/icon"
+        android:layout_width="@dimen/contactlist_item_icon_layout_width"
+        android:layout_height="@dimen/contactlist_item_icon_layout_height"
+        android:layout_margin="@dimen/standard_margin"
+        android:scaleType="centerCrop"
+        android:src="@drawable/ic_user"
+        android:contentDescription="@string/contactlist_item_icon"/>
+
+    <CheckedTextView
+        android:id="@+id/name"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/standard_list_item_size"
+        android:layout_marginEnd="@dimen/standard_margin"
+        android:layout_weight="1"
+        android:checkMark="?android:attr/listChoiceIndicatorMultiple"
+        android:ellipsize="marquee"
+        android:gravity="center_vertical"
+        android:singleLine="true"
+        android:textAppearance="?android:attr/textAppearanceListItem"/>
+
+</LinearLayout>

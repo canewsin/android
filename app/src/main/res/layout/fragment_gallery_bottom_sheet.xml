@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+ Nextcloud Android client application
+
+ @author TSI-mc
+ Copyright (C) 2022 TSI-mc
+ Copyright (C) 2022 Nextcloud GmbH
+
+ ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+ -->
+<androidx.coordinatorlayout.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        style="@style/Widget.Material3.BottomSheet"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:behavior_peekHeight="350dp"
+        app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+        <LinearLayout
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/standard_padding"
+            android:orientation="vertical">
+
+            <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_hide_images"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="8"
+                    android:gravity="start"
+                    android:layout_height="wrap_content"
+                    android:text="@string/show_images"
+                    app:iconPadding="@dimen/standard_half_padding"
+                    android:textSize="@dimen/bottom_sheet_text_size"
+                    app:icon="@drawable/ic_camera" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:id="@+id/tickMarkShowImages"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_tick"
+                    android:visibility="gone"
+                    app:tint="@color/primary"
+                    tools:visibility="visible" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_hide_videos"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="wrap_content"
+                    android:layout_weight="8"
+                    android:gravity="start"
+                    android:layout_height="wrap_content"
+                    android:text="@string/show_video"
+                    app:iconPadding="@dimen/standard_half_padding"
+                    android:textSize="@dimen/bottom_sheet_text_size"
+                    app:icon="@drawable/ic_video_camera" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+                <ImageView
+                    android:id="@+id/tickMarkShowVideos"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:contentDescription="@null"
+                    android:src="@drawable/ic_tick"
+                    android:visibility="gone"
+                    app:tint="@color/primary"
+                    tools:visibility="visible" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btn_select_media_folder"
+                    style="@style/Widget.Material3.Button.IconButton"
+                    android:layout_width="match_parent"
+                    android:gravity="start"
+                    android:layout_height="wrap_content"
+                    app:iconPadding="@dimen/standard_half_padding"
+                    android:text="@string/select_media_folder"
+                    android:textSize="@dimen/bottom_sheet_text_size"
+                    app:icon="@drawable/nav_photos" />
+
+                <View
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </FrameLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>
+
+
+

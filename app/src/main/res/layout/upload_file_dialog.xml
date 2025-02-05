@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2016-2021 Andy Scherzinger <info@andy-scherzinger>
+  ~ SPDX-FileCopyrightText: 2016 Atsushi Matsuo <matsuo@dds.co.jp>
+  ~ SPDX-FileCopyrightText: 2016 Nextcloud
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:gravity="clip_horizontal"
+              android:orientation="vertical"
+              android:padding="@dimen/standard_padding">
+
+    <TextView
+        android:id="@+id/label_file_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/upload_file_dialog_filename"
+        tools:text="@string/upload_file_dialog_filename"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/user_input_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/hint_name">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/user_input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:gravity="top"
+            android:importantForAutofill="no"
+            android:inputType="textNoSuggestions|textCapSentences"
+            android:scrollbars="vertical">
+
+        </com.google.android.material.textfield.TextInputEditText>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/label_file_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/standard_margin"
+        android:text="@string/upload_file_dialog_filetype"
+        tools:text="@string/upload_file_dialog_filetype"/>
+
+    <Spinner
+        android:id="@+id/file_type"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</LinearLayout>

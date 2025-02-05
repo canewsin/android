@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2022 Álvaro Brey <alvaro@alvarobrey.com>
+  ~ SPDX-FileCopyrightText: 2022 Nextcloud Gmbh
+  ~ SPDX-License-Identifier: GPL-3.0-or-later
+-->
+<ImageView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/page"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginVertical="1dp"
+    android:importantForAccessibility="no"
+    android:scaleType="fitCenter" />

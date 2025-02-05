@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2019 Chris Narkiewicz <hello@ezaquarii.com>
+  ~ SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
+-->
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/MaterialListItemSingleLine">
+
+    <androidx.appcompat.widget.AppCompatImageView
+        style="@style/MaterialListItemPrimaryAction"
+        android:id="@+id/primary_action"
+        tools:src="@drawable/ic_alert"/>
+
+    <TextView
+        android:id="@+id/text"
+        android:layout_gravity="center_vertical"
+        android:layout_width="0dip"
+        android:layout_weight="1"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:lines="1"
+        android:ellipsize="end"
+        android:textColor="?android:attr/textColorPrimary"
+        tools:text="Single line of text"/>
+
+    <androidx.appcompat.widget.AppCompatImageView
+        style="@style/MaterialListItemSecondaryAction"
+        android:id="@+id/secondary_action"
+        tools:src="@drawable/ic_alert"/>
+
+</LinearLayout>

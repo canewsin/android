@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Nextcloud - Android Client
+  ~
+  ~ SPDX-FileCopyrightText: 2018 Tobias Kaminsky <tobias@kaminsky.me>
+  ~ SPDX-FileCopyrightText: 2015-2016 Bartosz Przybylski
+  ~ SPDX-License-Identifier: GPL-2.0-only AND (AGPL-3.0-or-later OR GPL-2.0-only)
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:weightSum="100">
+
+    <TextView
+        android:id="@+id/welcomeText"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/standard_double_margin"
+        android:layout_marginTop="@dimen/standard_double_margin"
+        android:layout_weight="10"
+        android:gravity="center"
+        android:text="@string/placeholder_sentence"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/primary_button_text_color"/>
+
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/contentPanel"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="82" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginBottom="@dimen/standard_margin"
+        android:layout_marginLeft="@dimen/standard_margin"
+        android:layout_marginRight="@dimen/standard_margin"
+        android:layout_marginTop="@dimen/standard_double_margin"
+        android:layout_weight="8"
+        android:orientation="horizontal"
+        android:weightSum="3">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/skip"
+            style="@style/Button.Borderless.Login"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:paddingLeft="0dp"
+            android:paddingRight="0dp"
+            android:text="@string/whats_new_skip"/>
+
+        <com.owncloud.android.ui.whatsnew.ProgressIndicator
+            android:id="@+id/progressIndicator"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical|center_horizontal"
+            android:layout_weight="1">
+        </com.owncloud.android.ui.whatsnew.ProgressIndicator>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/forward"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:contentDescription="@string/forward"
+                android:src="@drawable/arrow_right"/>
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,6 +1,9 @@
+# SPDX-FileCopyrightText: 2016-2024 Nextcloud GmbH and Nextcloud contributors
+# SPDX-License-Identifier: AGPL-3.0-or-later OR GPL-2.0-only
 # built application files
 *.apk
 *.ap_
+*.aab
 
 # files for the dex VM
 *.dex
@@ -49,4 +52,8 @@ fastlane/Fastfile
 **/fastlane/test_output
 /fastlane/vendor/
 /.bundle/
-/fastlane/.bundle/
+/fastlane/.bundle
+
+# python
+**/__pycache__/
+/gradle/verification-keyring.gpg
